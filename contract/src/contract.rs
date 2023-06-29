@@ -56,3 +56,9 @@ extern "C" fn handle() {
 extern "C" fn state() {
     msg::reply(unsafe { STREAMS.clone() }, 0).expect("Error in state");
 }
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
+}
