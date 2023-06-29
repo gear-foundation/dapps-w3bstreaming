@@ -1,0 +1,15 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.button {
+    width: 122px;
+    height: 40px;
+    outline: none;
+    box-shadow: none;
+    background: theme-var($button-background);
+    border: 2px solid theme-var($button-border);
+    border-radius: 2px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}

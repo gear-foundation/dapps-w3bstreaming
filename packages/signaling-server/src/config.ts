@@ -17,7 +17,7 @@ export default {
   wsAddress: getEnv('WS_ADDRESS', 'ws://127.0.0.1:9944'),
   pathToStateWasm: getEnv(
     'PATH_TO_STATE_WASM',
-    '../../target/wasm32-unknown-unknown/release/web3streaming_state.meta.wasm',
+    '../../target/wasm32-unknown-unknown/release/web3streaming_state.meta.wasm'
   ),
   programId: getEnv('PROGRAM_ID'),
 };

@@ -1,0 +1,23 @@
+$background-primary: --primary;
+$background-secondary: --secondary;
+$background-tertiary: --tertiary;
+$text-primary: --text-primary;
+$text-secondary: --text-secondary;
+$green-special: --green-special;
+$green-special-bright: --green-special-bright;
+
+//ui-kit colors
+$button-border: --button-border;
+$button-background: --button-background;
+
+$theme-standard: (
+    $background-primary: #FFFFFF,
+    $background-secondary: #F5F5F5,
+    $background-tertiary: #000000,
+    $text-primary: #000000,
+    $text-secondary: #FFFFFF,
+    $green-special: #0ED3A3,
+    $green-special-bright: #00FFC4,
+    $button-border: #000000,
+    $button-background: #FFFFFF
+);

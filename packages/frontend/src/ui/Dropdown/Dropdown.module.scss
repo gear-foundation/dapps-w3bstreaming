@@ -1,0 +1,54 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown {
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: 40px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown-toggle-arrow {
+    margin-top: 5px;
+
+    &-rotated {
+        transform: rotate(180deg);
+        transition: transform 150ms;
+    }
+}
+
+.dropdown-label {
+    padding-right: 14px;
+}
+  
+.dropdown-menu {
+    position: absolute;
+    min-width: 250px;
+    max-width: 300px;
+    min-height: 180px;
+    z-index: 1;
+    padding: 30px;
+    border-radius: 4px;
+    background: theme-var($background-primary);
+    box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
+
+    &-item {
+        margin: 10px 0;
+        font-size: 18px;
+        font-weight: 400;
+        cursor: pointer;
+
+        &:hover {
+            color: theme-var($green-special);
+        }
+    }
+}

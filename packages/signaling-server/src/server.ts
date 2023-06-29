@@ -5,7 +5,14 @@ import express from 'express';
 
 import { isUserSubscribed } from './contract';
 import { isValidSig } from './helpers';
-import { IAnswerMsg, IBroadcastMsg, ICandidateMsg, IOfferMsg, IStopBroadcastingMsg, IWatchMsg } from 'types';
+import {
+  IAnswerMsg,
+  IBroadcastMsg,
+  ICandidateMsg,
+  IOfferMsg,
+  IStopBroadcastingMsg,
+  IWatchMsg,
+} from 'types';
 
 const app = express();
 app.use(cors());
@@ -21,11 +28,11 @@ const io = new Server(server, {
 const connections = new Map<string, Socket>();
 const streams = new Map<string, string>();
 
-io.sockets.on('error', (err) => {
+io.sockets.on('error', err => {
   console.error(err);
 });
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   socket.on('broadcast', (id: string, msg: IBroadcastMsg) => {
     connections.set(id, socket);
     streams.set(msg.streamId, id);
@@ -33,7 +40,9 @@ io.on('connection', (socket) => {
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
     if (!streams.has(msg.streamId)) {
-      return socket.emit('error', { message: `Stream with id ${msg.streamId} hasn't started yet` });
+      return socket.emit('error', {
+        message: `Stream with id ${msg.streamId} hasn't started yet`,
+      });
     }
 
     if (!isValidSig(id, msg.signedMsg)) {
@@ -41,7 +50,9 @@ io.on('connection', (socket) => {
     }
 
     if (!(await isUserSubscribed(msg.streamId, id))) {
-      return socket.emit('error', { message: `You aren't subscribed to stream with id ${msg.streamId}` });
+      return socket.emit('error', {
+        message: `You aren't subscribed to stream with id ${msg.streamId}`,
+      });
     }
 
     const broadcasterId = streams.get(msg.streamId) as string;
@@ -75,7 +86,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', (r) => {
+  socket.on('disconnect', r => {
     console.log('CLOSE', r);
   });
 });
