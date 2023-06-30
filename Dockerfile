@@ -4,6 +4,10 @@ WORKDIR /usr/src
 
 COPY . /usr/src
 
+RUN apk update
+
+RUN apk add make
+
 ARG WS_ADDRESS \
     PATH_TO_STATE_WASM \
     PROGRAM_ID
