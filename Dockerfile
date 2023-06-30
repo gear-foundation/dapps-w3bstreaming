@@ -6,7 +6,13 @@ COPY . /usr/src
 
 RUN apk update
 
-RUN apk add make
+RUN apk add make curl
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN make build_contract
 
 ARG WS_ADDRESS \
     PATH_TO_STATE_WASM \
