@@ -1,3 +1,4 @@
+import { atom } from 'jotai';
 import { HexString } from '@polkadot/util/types';
 
 export const LOCAL_STORAGE = {
@@ -10,5 +11,12 @@ export const LOCAL_STORAGE = {
 
 export const ADDRESS = {
   NODE: 'wss://testnet.vara.rs',
-  CONTRACT: '0xfe5401522373c16c35e5d29b9ed8cf6df5aece8f1b8927886b62bc1cfef4450f' as HexString,
+  NODES: 'https://idea.gear-tech.io/gear-nodes',
+  CONTRACT: '0xf6d9f8490f5311dfad81a7347ac65e5f3d004ffa811ab571950a1af062adae1d' as HexString,
 };
+
+export const SEARCH_PARAMS = {
+  MASTER_CONTRACT_ID: 'master',
+};
+
+export const CONTRACT_ADDRESS_ATOM = atom(ADDRESS.CONTRACT);

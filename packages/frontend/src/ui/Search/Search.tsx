@@ -3,11 +3,11 @@ import { SearchProps } from './Search.interfaces';
 import styles from './Search.module.scss';
 import searchIcon from '@/assets/icons/search-icon.svg';
 
-function Search({ placeholder = 'Search' }: SearchProps) {
+function Search({ placeholder = 'Search', onChange }: SearchProps) {
   return (
     <div className={cx(styles.container)}>
       <img src={searchIcon} alt="search" />
-      <input type="text" placeholder={placeholder} className={cx(styles.search)} />
+      <input type="text" placeholder={placeholder} className={cx(styles.search)} onChange={onChange} />
     </div>
   );
 }

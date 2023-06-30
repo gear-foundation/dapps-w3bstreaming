@@ -5,6 +5,7 @@ import crossSVG from '@/assets/icons/cross-icon.svg';
 import styles from './Modal.module.scss';
 import { ModalProps } from './Modal.interface';
 import { cx } from '@/utils';
+import { Button } from '@/ui';
 
 function Modal({ heading, children, onClose }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -42,10 +43,8 @@ function Modal({ heading, children, onClose }: ModalProps) {
       <div className={cx(styles.wrapper)}>
         <header className={cx(styles.header)}>
           <h2>{heading}</h2>
-
-          <img src={crossSVG} alt="df" onClick={onClose} />
+          <Button variant="icon" size="small" label="" icon={crossSVG} onClick={onClose} />
         </header>
-
         {children}
       </div>
     </dialog>

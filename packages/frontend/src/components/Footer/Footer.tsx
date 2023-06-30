@@ -37,7 +37,7 @@ function Footer() {
         <span className={cx(styles.rigts)}>© 2023 Gear Foundation, Inc. All Rights Reserved.</span>
         <div className={cx(styles.socials)}>
           {socials.map(({ name, url, icon }) => (
-            <a href={url} key={url}>
+            <a href={url} key={`${name}${url}`}>
               <img src={icon} alt={name} className={cx(styles['socials-icon'])} />
             </a>
           ))}

@@ -17,7 +17,7 @@ function IntrodutionInfo() {
           Revolutionize media consumption with seamless audio and video streaming using P2P technology. Stream and share
           content directly from your devices, eliminating the need for centralized servers
         </p>
-        <Button label="Connect Wallet" />
+        <Button label="Connect Wallet" variant="primary" size="large" />
       </div>
       <div className={cx(styles.right)}>
         <img src={mainFrame} alt="united people" className={cx(styles['lower-img'])} />

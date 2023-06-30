@@ -6,11 +6,9 @@ import { withProviders } from '@/hocs';
 import { cx } from '@/utils';
 import { menu, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
 import styles from './App.module.scss';
-import { StreamTeasers } from '@/components/StreamTeasers';
-// import Watch from './components/Watch';
-// import Braodcast from './components/Broadcast';
+import { StreamTeasersList } from '@/features/StreamTeasers';
 import 'babel-polyfill';
-import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute/ProtectedRoute';
+import { ProtectedRoute } from '@/features/Auth/components/ProtectedRoute/ProtectedRoute';
 import { Loader } from './components/Loader';
 
 function AppComponent() {
@@ -51,11 +49,9 @@ function AppComponent() {
                   </ProtectedRoute>
                 }
               />
-              {/* <Route path="watch" element={<Watch />} /> */}
-              {/* <Route path="broadcast" element={<Braodcast />} /> */}
             </Routes>
           </div>
-          <StreamTeasers />
+          <StreamTeasersList />
           <Footer />
         </>
       ) : (

@@ -1,19 +1,22 @@
 import { useState } from 'react';
+import { useAtom } from 'jotai';
+import Identicon from '@polkadot/react-identicon';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { WalletModal } from '@/features/wallet/components';
+import { WalletModal } from '@/features/Wallet/components';
 import { cx } from '@/utils';
 import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo-vara-black.png';
 import coin from '@/assets/icons/wara-coin-silver.png';
 import { HeaderProps } from './Header.interfaces';
-import { useWallet } from '@/features/wallet/hooks';
+import { ADDRESS, CONTRACT_ADDRESS_ATOM } from '@/consts';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const address = useAtom(CONTRACT_ADDRESS_ATOM);
 
   const handleOpenWalletModal = () => {
     setIsWalletModalOpen(true);
@@ -56,13 +59,20 @@ function Header({ menu }: HeaderProps) {
                   <div className={cx(styles['balance-currency-name'])}>Vara</div>
                 </div>
                 <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
-                  <div className={cx(styles['description-icon'])} />
+                  {address && (
+                    <Identicon
+                      value={ADDRESS.CONTRACT}
+                      size={21}
+                      theme="polkadot"
+                      className={cx(styles['description-icon'])}
+                    />
+                  )}
                   <div className={cx(styles['description-name'])}>{account?.meta.name}</div>
                 </button>
               </div>
             </>
           ) : (
-            <Button label="connect" onClick={handleOpenWalletModal} />
+            <Button label="connect" variant="outline" onClick={handleOpenWalletModal} />
           )}
         </div>
       </header>

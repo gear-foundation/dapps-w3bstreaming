@@ -5,6 +5,7 @@ $text-primary: --text-primary;
 $text-secondary: --text-secondary;
 $green-special: --green-special;
 $green-special-bright: --green-special-bright;
+$error: --error;
 
 //ui-kit colors
 $button-border: --button-border;
@@ -19,5 +20,6 @@ $theme-standard: (
     $green-special: #0ED3A3,
     $green-special-bright: #00FFC4,
     $button-border: #000000,
-    $button-background: #FFFFFF
+    $button-background: #FFFFFF,
+    $error: #FF0101
 );
