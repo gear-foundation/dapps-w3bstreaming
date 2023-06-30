@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAtom } from 'jotai';
 import Identicon from '@polkadot/react-identicon';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@ui';
+import { useLocation } from 'react-router-dom';
+import { Button, Link } from '@ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { WalletModal } from '@/features/Wallet/components';
 import { cx } from '@/utils';
