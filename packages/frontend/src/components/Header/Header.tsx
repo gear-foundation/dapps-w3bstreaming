@@ -15,7 +15,7 @@ import { ADDRESS, CONTRACT_ADDRESS_ATOM } from '@/consts';
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
   const address = useAtom(CONTRACT_ADDRESS_ATOM);
 
   const handleOpenWalletModal = () => {

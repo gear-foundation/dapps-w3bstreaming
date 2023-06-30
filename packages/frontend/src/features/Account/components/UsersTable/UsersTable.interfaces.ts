@@ -16,7 +16,6 @@ export interface SubscribersData extends TableRow {
 }
 
 export interface UsersTableProps {
-  type: 'withSubscribers' | 'withSubscriptions';
   data: SubscriptionsData[] | SubscribersData[];
   columns: string[];
 }

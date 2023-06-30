@@ -4,10 +4,8 @@ import { cx } from '@/utils';
 import { Table } from '@/ui';
 import img from '@/assets/icons/streamer-table-img.png';
 import { CellValue } from '@/ui/Table/Table.interfaces';
-import { SUBSCRIPTIONS_USERS_TABLE_COLUMNS } from '../../consts';
 
 function Cell(columnName: string | number, value: CellValue) {
-  console.log(value);
   if (columnName === 'Action') {
     return <button className={cx(styles['unsubscribe-cell'])}>Unsubscribe</button>;
   }
@@ -24,7 +22,7 @@ function Cell(columnName: string | number, value: CellValue) {
   return value;
 }
 
-function UsersTable({ data, columns, type = 'withSubscriptions' }: UsersTableProps) {
+function UsersTable({ data, columns }: UsersTableProps) {
   return (
     <div className={cx(styles.table)}>
       <Table

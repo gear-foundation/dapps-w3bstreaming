@@ -4,12 +4,12 @@ import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
 import { cx } from '@/utils';
-import { menu, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
-import styles from './App.module.scss';
+import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
 import { StreamTeasersList } from '@/features/StreamTeasers';
-import 'babel-polyfill';
 import { ProtectedRoute } from '@/features/Auth/components/ProtectedRoute/ProtectedRoute';
 import { Loader } from './components/Loader';
+import styles from './App.module.scss';
+import 'babel-polyfill';
 
 function AppComponent() {
   const { isApiReady } = useApi();
@@ -21,7 +21,7 @@ function AppComponent() {
     <div className={cx(styles['app-container'])}>
       {isAppReady ? (
         <>
-          <Header menu={menu} />
+          <Header menu={routes} />
           <div className={cx(styles['main-content'])}>
             <Routes>
               <Route path="/" element={<MainPage />} />

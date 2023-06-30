@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useEffect, useRef, MouseEvent } from 'react';
+import { useEffect, useRef, MouseEvent, useCallback } from 'react';
 import crossSVG from '@/assets/icons/cross-icon.svg';
 import styles from './Modal.module.scss';
 import { ModalProps } from './Modal.interface';
@@ -13,22 +13,21 @@ function Modal({ heading, children, onClose }: ModalProps) {
   const disableScroll = () => document.body.classList.add('modal-open');
   const enableScroll = () => document.body.classList.remove('modal-open');
 
-  const open = () => {
+  const open = useCallback(() => {
     ref.current?.showModal();
     disableScroll();
-  };
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     ref.current?.close();
     enableScroll();
-  };
+  }, []);
 
   useEffect(() => {
     open();
 
     return () => close();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [open, close]);
 
   const handleClick = ({ target }: MouseEvent) => {
     const isBackdropClick = target === ref.current;

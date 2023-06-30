@@ -9,27 +9,20 @@ import exitSVG from '@/assets/icons/exit-icon.svg';
 import { WALLET } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../WalletItem';
-import { WalletId } from '../../types';
+import { WalletEntry, WalletId } from '../../types';
 
 import styles from './WalletModal.module.scss';
 import { Button } from '@/ui';
+import { WalletModalProps } from './WalletModal.interface';
 
-type Props = {
-  onClose: () => void;
-};
-
-const WALLETS = Object.entries(WALLET);
-
-function WalletModal({ onClose }: Props) {
+function WalletModal({ onClose }: WalletModalProps) {
   const { extensions, account, login, logout } = useAccount();
-
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
     useWallet();
 
   const getWallets = () =>
-    WALLETS.map(([id, { SVG, name }]) => {
+    Object.entries(WALLET).map(([id, { SVG, name }]) => {
       const isEnabled = extensions.some((extension) => extension.name === id);
-      const status = isEnabled ? 'Enabled' : 'Disabled';
 
       const accountsCount = getWalletAccounts(id as WalletId).length;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
@@ -40,10 +33,8 @@ function WalletModal({ onClose }: Props) {
         <li key={id}>
           <button type="button" className={cx(styles['wallet-button'])} onClick={onClick} disabled={!isEnabled}>
             <WalletItem icon={SVG} name={name} />
-
             <div className={cx(styles.status)}>
-              <p className={cx(styles['status-text'])}>{status}</p>
-
+              <p className={cx(styles['status-text'])}>{isEnabled ? 'Enabled' : 'Disabled'}</p>
               {isEnabled && <p className={cx(styles['status-accounts'])}>{accountsStatus}</p>}
             </div>
           </button>
@@ -54,7 +45,6 @@ function WalletModal({ onClose }: Props) {
   const getAccounts = () =>
     walletAccounts?.map((_account) => {
       const { address, meta } = _account;
-
       const isActive = address === account?.address;
 
       const handleClick = () => {
@@ -94,14 +84,12 @@ function WalletModal({ onClose }: Props) {
   return (
     <Modal heading={wallet ? 'Connect wallet' : 'Wallet connection'} onClose={onClose}>
       <ul className={cx(styles.list)}>{getAccounts() || getWallets()}</ul>
-
       {wallet && (
         <footer className={cx(styles.footer)}>
           <button type="button" className={cx(styles['wallet-button'])} onClick={resetWalletId}>
             <WalletItem icon={wallet.SVG} name={wallet.name} />
             <img src={penEditSVG} alt="edit" />
           </button>
-
           {account && (
             <div className={cx(styles['logout-button-container'])}>
               <Button variant="icon" size="small" label="" icon={exitSVG} />

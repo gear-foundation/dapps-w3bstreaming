@@ -41,6 +41,7 @@ export const subscriptionsMocked = [
 ];
 
 export const subscribersMocked = [
+  //MOCKED
   {
     id: 1,
     User: 'John Bin',
@@ -130,14 +131,10 @@ export const subscribersMocked = [
 export const tabs = {
   subscriptions: {
     name: 'Subscriptions',
-    component: () => (
-      <UsersTable type="withSubscriptions" data={subscriptionsMocked} columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS} />
-    ),
+    component: () => <UsersTable data={subscriptionsMocked} columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS} />,
   },
   subscribers: {
     name: 'Subscribers',
-    component: () => (
-      <UsersTable type="withSubscribers" data={subscribersMocked} columns={SUBSCRIBERS_USERS_TABLE_COLUMNS} />
-    ),
+    component: () => <UsersTable data={subscribersMocked} columns={SUBSCRIBERS_USERS_TABLE_COLUMNS} />,
   },
 };

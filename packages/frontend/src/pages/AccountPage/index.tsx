@@ -1,4 +1,3 @@
-import { TabPanel } from '@ui';
 import { Layout } from '@/features/Account/components/Layout';
 
 function AccountPage() {

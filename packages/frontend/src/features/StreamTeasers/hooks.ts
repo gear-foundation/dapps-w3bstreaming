@@ -22,12 +22,11 @@ function useProgramMetadata(metaSource: string) {
 }
 
 function useStreamTeasersState() {
+  const programId = ADDRESS.CONTRACT;
+
   const { api } = useApi();
   const meta = useProgramMetadata(metaTxt);
-
   const [teasers, setTeasers] = useState<StreamTeaser>([]);
-
-  const programId = ADDRESS.CONTRACT;
 
   useEffect(() => {
     if (meta) {
@@ -42,29 +41,3 @@ function useStreamTeasersState() {
 }
 
 export { useStreamTeasersState };
-// {
-//   "1688064064000hey": {
-//     "broadcaster": "0xec504317637d775baaafac126fd99c542eddb0358cb4d312ed54836146a10103",
-//     "timestamp": "1,658,708,200",
-//     "title": "hey",
-//     "description": "sdfsddfdsfsdf",
-//     "watchers": []
-//   }
-// }
-
-// {
-//   "1688064064000hey": {
-//     "broadcaster": "0xec504317637d775baaafac126fd99c542eddb0358cb4d312ed54836146a10103",
-//     "timestamp": "1,658,708,200",
-//     "title": "hey",
-//     "description": "sdfsddfdsfsdf",
-//     "watchers": []
-//   },
-//   "1688065341000some another stream": {
-//     "broadcaster": "0xec504317637d775baaafac126fd99c542eddb0358cb4d312ed54836146a10103",
-//     "timestamp": "1,658,984,200",
-//     "title": "some another stream",
-//     "description": "something",
-//     "watchers": []
-//   }
-// }
