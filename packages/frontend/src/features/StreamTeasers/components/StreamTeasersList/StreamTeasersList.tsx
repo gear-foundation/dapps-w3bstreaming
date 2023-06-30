@@ -6,33 +6,36 @@ import styles from './StreamTeasersList.module.scss';
 import { useStreamTeasersState } from '../../hooks';
 import { selectTeasersMenu, tes } from '../../config';
 import { FormattedTeaser } from '../../types';
+import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
 
-function StreamTeasersList() {
-  const streamTeasersToExpand = 3;
+function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const streamTeasers = useStreamTeasersState();
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
-
+  const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
+  const [searchedValue, setSearchedValue] = useState('');
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
     setTeasers(Object.keys(tes).map((key) => tes[key]));
   }, [streamTeasers]);
 
-  useEffect(() => {
-    setShowedTeasers(teasers.slice(0, streamTeasersToExpand));
-  }, [teasers, streamTeasersToExpand]);
-
   const handleExpandPage = () => {
-    const lastShowedTeaser = showedTeasers.length - 1;
-
-    setShowedTeasers((prev) => [...prev, ...teasers.slice(lastShowedTeaser, lastShowedTeaser + streamTeasersToExpand)]);
+    setShowedTeasersCount((prev) => prev + streamTeasersToExpand);
   };
 
   const handleChangedSearchedValue = (e: any) => {
+    setSearchedValue(e.target.value);
     const foundTeasers = teasers.filter((teaser) => teaser.title.toLowerCase().includes(e.target.value.toLowerCase()));
 
     setShowedTeasers(foundTeasers);
   };
+
+  useEffect(() => {
+    const foundTeasers = teasers.filter((teaser) => teaser.title.toLowerCase().includes(searchedValue.toLowerCase()));
+
+    setShowedTeasers(foundTeasers);
+    setShowedTeasersCount(initialTeasersCount);
+  }, [searchedValue, teasers, initialTeasersCount]);
 
   return (
     <div className={cx(styles.container)}>
@@ -41,11 +44,14 @@ function StreamTeasersList() {
         <Search onChange={handleChangedSearchedValue} />
       </div>
       <div className={cx(styles.content)}>
-        {showedTeasers.map((item) => (
+        {showedTeasers.slice(0, showedTeasersCount).map((item) => (
           <StreamTeaser key={item.title + item.description + item.timestamp} {...item} />
         ))}
       </div>
-      {showedTeasers.length <= teasers.length && (
+      {!showedTeasers.length && searchedValue ? (
+        <h3 className={cx(styles['no-streams-found'])}>No streams found</h3>
+      ) : null}
+      {showedTeasersCount <= showedTeasers.length && (
         <div className={cx(styles['view-more-button-wrapper'])}>
           <Button variant="outline" size="medium" label="View More" onClick={handleExpandPage} />
         </div>
