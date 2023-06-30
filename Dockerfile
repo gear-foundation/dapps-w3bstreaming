@@ -8,11 +8,13 @@ RUN apk update
 
 RUN apk add make curl
 
+RUN apk add --virtual build-dependencies build-base gcc musl-dev
+
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN make build_contract
+RUN rustup default nightly-2023-04-25 && rustup target add wasm32-unknown-unknown
 
 ARG WS_ADDRESS \
     PATH_TO_STATE_WASM \
