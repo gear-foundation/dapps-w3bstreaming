@@ -1,0 +1,16 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.layout {
+    padding: 50px 0;
+}
+
+.title {
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.content {
+    padding-top: 32px;
+    display: flex;
+}

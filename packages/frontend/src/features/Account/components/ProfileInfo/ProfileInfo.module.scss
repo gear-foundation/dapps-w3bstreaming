@@ -1,0 +1,39 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.profile-info {
+    width: 275px;
+    margin-right: 32px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, #F5F5F5 0%, rgba(245, 245, 245, 0) 100%);
+
+    &-name {
+        padding-top: 20px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &-subs {
+        padding-top: 5px;
+
+        &-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        &-caption {
+            font-size: 14px;
+            font-weight: 400;
+        }
+    }
+
+    &-role {
+        padding: 10px 0 24px;
+        opacity: 0.5;
+        font-size: 14px;
+        font-weight: 400;
+    }
+}
