@@ -12,7 +12,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const streamTeasers = useStreamTeasersState();
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
-  const [searchedValue, setSearchedValue] = useState('');
+  const [searchedValue, setSearchedValue] = useState<string>('');
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
@@ -37,10 +37,19 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     setShowedTeasersCount(initialTeasersCount);
   }, [searchedValue, teasers, initialTeasersCount]);
 
+  const handleSelectTypeOfStreams = ({ value }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
+    console.log(value); //TODO connect the data
+  };
+
   return (
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
-        <Dropdown label="All streams" menu={selectTeasersMenu} activeValue={selectTeasersMenu.all.value} />
+        <Dropdown
+          label="All streams"
+          menu={selectTeasersMenu}
+          activeValue={selectTeasersMenu.all.value}
+          onItemClick={handleSelectTypeOfStreams}
+        />
         <Search onChange={handleChangedSearchedValue} />
       </div>
       <div className={cx(styles.content)}>
