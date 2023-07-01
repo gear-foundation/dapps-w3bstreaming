@@ -1,4 +1,3 @@
-import { atom } from 'jotai';
 import { HexString } from '@polkadot/util/types';
 
 export const LOCAL_STORAGE = {
@@ -18,5 +17,3 @@ export const ADDRESS = {
 export const SEARCH_PARAMS = {
   MASTER_CONTRACT_ID: 'master',
 };
-
-export const CONTRACT_ADDRESS_ATOM = atom(ADDRESS.CONTRACT);

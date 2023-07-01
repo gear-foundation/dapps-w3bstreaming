@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, MutableRefObject, RefObject } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProgramMetadata, getProgramMetadata } from '@gear-js/api';
 import { useAlert } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { useAtom } from 'jotai';
-import { LOCAL_STORAGE, SEARCH_PARAMS, CONTRACT_ADDRESS_ATOM } from '@/consts';
+import { LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
+import { Handler } from '@/types';
+import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 
 function useProgramMetadata(source: string) {
   const alert = useAlert();
@@ -18,9 +20,7 @@ function useProgramMetadata(source: string) {
       .then((metaHex) => getProgramMetadata(metaHex))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [source, alert]);
 
   return metadata;
 }
@@ -43,9 +43,27 @@ function useContractAddressSetup() {
 
     searchParams.set(SEARCH_PARAMS.MASTER_CONTRACT_ID, address);
     setSearchParams(searchParams);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, searchParams]);
+  }, [address, searchParams, setSearchParams]);
 }
 
-export {};
+function useClickOutside(handler: Handler, ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]): void {
+  useEffect(() => {
+    const listener = (event: Event): void => {
+      const existingRefs = refs.filter((item) => item?.current && item);
+
+      const res = existingRefs.every((item) => !item.current?.contains(<Node>event.target));
+
+      if (res) {
+        handler(event);
+      }
+    };
+
+    document.addEventListener('mousedown', listener);
+
+    return (): void => {
+      document.removeEventListener('mousedown', listener);
+    };
+  }, [refs, handler]);
+}
+
+export { useProgramMetadata, useContractAddressSetup, useClickOutside };

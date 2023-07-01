@@ -10,7 +10,8 @@ import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo-vara-black.png';
 import coin from '@/assets/icons/wara-coin-silver.png';
 import { HeaderProps } from './Header.interfaces';
-import { ADDRESS, CONTRACT_ADDRESS_ATOM } from '@/consts';
+import { ADDRESS } from '@/consts';
+import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();

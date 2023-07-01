@@ -1,15 +1,26 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { cx } from '@/utils';
 import styles from './Dropdown.module.scss';
 import { DropdownProps } from './Dropdown.interfaces';
 import selectArrow from '@/assets/icons/select-arrow.svg';
+import { useClickOutside } from '@/hooks';
 
 function Dropdown({ label, menu }: DropdownProps) {
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLButtonElement>(null);
+
+  useClickOutside(
+    () => {
+      setOpen(false);
+    },
+    menuRef,
+    dropdownRef,
+  );
 
   return (
     <div className={cx(styles.container)}>
-      <button onClick={() => setOpen(!open)} className={cx(styles.dropdown)}>
+      <button onClick={() => setOpen(!open)} className={cx(styles.dropdown)} ref={dropdownRef}>
         <span className={cx(styles['dropdown-label'])}>{label}</span>
         <img
           src={selectArrow}
@@ -19,7 +30,7 @@ function Dropdown({ label, menu }: DropdownProps) {
       </button>
 
       {open && (
-        <div className={cx(styles['dropdown-menu'])}>
+        <div className={cx(styles['dropdown-menu'])} ref={menuRef}>
           <ul>
             {Object.keys(menu).map((item) => (
               <li key={menu[item].value} className={cx(styles['dropdown-menu-item'])}>
