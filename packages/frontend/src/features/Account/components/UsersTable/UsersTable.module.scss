@@ -5,10 +5,6 @@
     max-width: 893px;
 }
 
-.streamer-cell {
-    
-}
-
 .streamer-cell-name {
     padding-left: 10px;
     font-weight: 600;
@@ -31,10 +27,6 @@
         justify-content: end;
         text-align: right;
     }
-
-    &:first-child {
-        // width: 480px;
-    }
 }
 
 .cell {
@@ -42,8 +34,5 @@
         text-align: right; 
         justify-content: end;
         text-align: right;
-    }
-    &:first-child {
-        // width: 480px;
     }
 }

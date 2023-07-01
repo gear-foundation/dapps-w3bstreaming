@@ -22,7 +22,7 @@ function Cell(columnName: string | number, value: CellValue) {
   return value;
 }
 
-function UsersTable({ data, columns }: UsersTableProps) {
+function UsersTable({ data, columns, searchParams }: UsersTableProps) {
   return (
     <div className={cx(styles.table)}>
       <Table
@@ -34,6 +34,7 @@ function UsersTable({ data, columns }: UsersTableProps) {
           headerCell: cx(styles['header-cell']),
           cell: cx(styles.cell),
         }}
+        searchParams={{ ...searchParams, placeholder: 'Search transactions' }}
       />
     </div>
   );

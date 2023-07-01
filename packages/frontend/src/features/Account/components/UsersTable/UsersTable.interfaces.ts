@@ -18,4 +18,7 @@ export interface SubscribersData extends TableRow {
 export interface UsersTableProps {
   data: SubscriptionsData[] | SubscribersData[];
   columns: string[];
+  searchParams: {
+    column: string;
+  };
 }

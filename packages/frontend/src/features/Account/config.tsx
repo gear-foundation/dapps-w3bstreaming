@@ -131,10 +131,22 @@ export const subscribersMocked = [
 export const tabs = {
   subscriptions: {
     name: 'Subscriptions',
-    component: () => <UsersTable data={subscriptionsMocked} columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS} />,
+    component: () => (
+      <UsersTable
+        data={subscriptionsMocked}
+        columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS}
+        searchParams={{ column: 'Streamer' }}
+      />
+    ),
   },
   subscribers: {
     name: 'Subscribers',
-    component: () => <UsersTable data={subscribersMocked} columns={SUBSCRIBERS_USERS_TABLE_COLUMNS} />,
+    component: () => (
+      <UsersTable
+        data={subscribersMocked}
+        columns={SUBSCRIBERS_USERS_TABLE_COLUMNS}
+        searchParams={{ column: 'User' }}
+      />
+    ),
   },
 };

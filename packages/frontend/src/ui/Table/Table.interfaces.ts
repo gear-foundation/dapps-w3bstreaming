@@ -9,6 +9,7 @@ export interface TableProps {
   columns: string[];
   sortedColumns?: string[];
   pagination?: Pagination;
+  searchParams?: SearchParams;
   renderCell?: (columnName: string | number, value: CellValue) => CellValue | JSX.Element;
   renderHeaderCell?: (name: string | number) => CellValue;
   className: {
@@ -41,4 +42,9 @@ export interface TableCellProps {
 
 export interface Pagination {
   rowsPerPage: number;
+}
+
+export interface SearchParams {
+  column: string;
+  placeholder?: string;
 }

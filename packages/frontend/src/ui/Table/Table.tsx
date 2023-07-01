@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { cx } from '@/utils';
 import styles from './Table.module.scss';
 import {
@@ -11,6 +11,7 @@ import {
   TableRowProps,
 } from './Table.interfaces';
 import { Pagination } from '../Pagination';
+import { Search } from '../Search';
 
 function Cell({ className, children }: TableCellProps) {
   return <th className={cx(styles.cell, className)}>{children}</th>;
@@ -36,13 +37,18 @@ function Body({ children }: TableBodyProps) {
   return <tbody className={cx(styles.body)}>{children}</tbody>;
 }
 
-function Table({ rows, columns, pagination, renderCell, renderHeaderCell, className }: TableProps) {
+function Table({ rows, columns, pagination, searchParams, renderCell, renderHeaderCell, className }: TableProps) {
   const [tableData, setTableData] = useState<TableRow[]>(rows || []);
+  const [searchedValue, setSearchedValue] = useState<string>('');
 
   const [currentRows, setCurrentRows] = useState<TableRow[]>(rows || []);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
+  const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchedValue(e.target.value);
+  };
+
+  const handleCalculateCurrentRows = useCallback(() => {
     if (pagination) {
       const indexOfFirstRow = (currentPage - 1) * pagination.rowsPerPage;
 
@@ -50,12 +56,35 @@ function Table({ rows, columns, pagination, renderCell, renderHeaderCell, classN
     }
   }, [tableData, pagination, currentPage]);
 
+  const handleSearch = useCallback(() => {
+    if (searchParams?.column) {
+      setTableData(
+        rows.filter((row) =>
+          row[searchParams?.column || columns[0]]?.toString().toLowerCase().includes(searchedValue.toLowerCase()),
+        ),
+      );
+    }
+  }, [searchedValue, columns, rows, searchParams]);
+
+  useEffect(() => {
+    handleCalculateCurrentRows();
+  }, [handleCalculateCurrentRows]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [handleSearch]);
+
   useEffect(() => {
     setTableData(rows);
   }, [rows]);
 
   return (
     <div className={cx(styles.container)}>
+      {searchParams?.column && (
+        <div className={cx(styles.search)}>
+          <Search value={searchedValue} onChange={handleChangeSearch} placeholder={searchParams.placeholder} />
+        </div>
+      )}
       <div className={cx(styles['table-wrapper'])}>
         <table className={cx(styles.table)}>
           <Header>

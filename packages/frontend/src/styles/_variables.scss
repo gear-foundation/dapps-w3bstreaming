@@ -3,6 +3,7 @@ $background-secondary: --secondary;
 $background-tertiary: --tertiary;
 $text-primary: --text-primary;
 $text-secondary: --text-secondary;
+$text-tertiary: --text-tertiary;
 $green-special: --green-special;
 $green-special-bright: --green-special-bright;
 $error: --error;
@@ -17,6 +18,7 @@ $theme-standard: (
     $background-tertiary: #000000,
     $text-primary: #000000,
     $text-secondary: #FFFFFF,
+    $text-tertiary: #C4C4C4,
     $green-special: #0ED3A3,
     $green-special-bright: #00FFC4,
     $button-border: #000000,
