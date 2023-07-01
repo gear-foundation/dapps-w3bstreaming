@@ -40,7 +40,7 @@
 }
 
 .body {
-    width: 100%;
+    display: block;
     background: theme-var($background-primary);
     color: theme-var($text-primary);
 }
@@ -75,6 +75,7 @@
     align-items: center;
     padding-top: 10%;
     gap: 8px;
+    text-align: center;
 
     &-title {
         font-size: 26px;
