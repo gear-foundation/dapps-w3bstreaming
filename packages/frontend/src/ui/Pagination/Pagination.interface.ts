@@ -4,3 +4,7 @@ export interface PaginationProps {
   currentPage: number;
   setCurrentPage: () => void;
 }
+
+export interface PagesMenu {
+  [key: string]: { label: string; value: string };
+}
