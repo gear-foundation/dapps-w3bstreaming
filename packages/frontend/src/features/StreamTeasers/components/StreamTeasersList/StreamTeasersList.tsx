@@ -50,7 +50,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
           activeValue={selectTeasersMenu.all.value}
           onItemClick={handleSelectTypeOfStreams}
         />
-        <Search onChange={handleChangedSearchedValue} />
+        <Search onChange={handleChangedSearchedValue} value={searchedValue} />
       </div>
       <div className={cx(styles.content)}>
         {showedTeasers.slice(0, showedTeasersCount).map((item) => (
