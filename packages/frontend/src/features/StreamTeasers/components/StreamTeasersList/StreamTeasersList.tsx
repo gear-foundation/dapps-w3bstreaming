@@ -45,9 +45,11 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
         <Dropdown
-          label="All streams"
+          label={<h3 className={cx(styles['dropdown-title'])}>All streams</h3>}
           menu={selectTeasersMenu}
           activeValue={selectTeasersMenu.all.value}
+          toggleArrowSize="medium"
+          alignMenu="left"
           onItemClick={handleSelectTypeOfStreams}
         />
         <Search onChange={handleChangedSearchedValue} value={searchedValue} />

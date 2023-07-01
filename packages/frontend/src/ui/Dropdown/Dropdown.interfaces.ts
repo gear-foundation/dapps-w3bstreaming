@@ -8,8 +8,14 @@ export interface DropdownMenuItem {
 }
 
 export interface DropdownProps {
-  label: string;
+  label: string | JSX.Element;
   menu: DropdownMenu;
-  activeValue: string;
+  activeValue?: string;
+  toggleArrowSize?: 'small' | 'medium' | 'large';
+  alignMenu?: 'left' | 'center' | 'right';
+  className?: {
+    menu?: string;
+    menuItem?: string;
+  };
   onItemClick: (item: DropdownMenuItem) => void;
 }
