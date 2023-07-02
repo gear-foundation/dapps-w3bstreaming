@@ -27,4 +27,4 @@ RUN make init
 
 RUN make build_js
 
-CMD ["make", "run_server"]
+CMD ["make", "-j", "2", "run_server","run_fe"]
