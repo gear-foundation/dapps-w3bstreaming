@@ -1,0 +1,22 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+    :global(.react-time-picker__wrapper) {
+        height: 50px;
+        width: 160px;
+        padding: 0 10px 0 20px;
+        border: 1px solid theme-var($text-tertiary);
+        border-radius: 4px;
+    }
+
+    :global(.react-time-picker__inputGroup__input) {
+        font-size: 16px;
+        font-weight: 400;
+
+        &:last-child { 
+            position: absolute;
+            right: 20px;
+        }
+    }
+}
