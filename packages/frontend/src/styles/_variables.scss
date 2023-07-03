@@ -6,6 +6,12 @@ $text-secondary: --text-secondary;
 $text-tertiary: --text-tertiary;
 $green-special: --green-special;
 $green-special-bright: --green-special-bright;
+$green-special-pale: --green-special-pale;
+$table-text-weekday-cell: --table-text-weekday-cell;
+$table-background-day-cell: --table-background-day-cell;
+$text-section-title: --text-section-title;
+$placeholder-input: --placeholder-input;
+
 $error: --error;
 
 //ui-kit colors
@@ -21,7 +27,12 @@ $theme-standard: (
     $text-tertiary: #C4C4C4,
     $green-special: #0ED3A3,
     $green-special-bright: #00FFC4,
+    $green-special-pale: rgba(0, 255, 196, 0.4),
     $button-border: #000000,
     $button-background: #FFFFFF,
-    $error: #FF0101
+    $error: #FF0101,
+    $table-text-weekday-cell: #909090,
+    $text-section-title: #292929,
+    $table-background-day-cell: rgba(0, 255, 196, 0.2),
+    $placeholder-input: rgba(0, 255, 196, 0.2),
 );
