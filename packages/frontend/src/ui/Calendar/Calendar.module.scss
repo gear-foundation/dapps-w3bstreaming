@@ -19,6 +19,37 @@
 }
 
 .calendar {
+    &-date-day {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    
+        &-name {
+            width: 86px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: theme-var($text-primary);
+            background: theme-var($background-secondary);
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+    
+        &-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: theme-var($text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    }
+
     &-header {
         padding-bottom: 13px;
         width: 100%;
@@ -50,7 +81,7 @@
             margin: 3px 13px;
             font-size: 14px;
             font-weight: 500;
-            color: #909090;
+            color: theme-var($table-text-weekday-cell);
 
             &:first-child {
                 margin-left: 0px;
@@ -82,15 +113,15 @@
             }
 
             &:hover {
-                background: rgba(0, 255, 196, 0.2)
+                background: theme-var($table-background-day-cell);
             }
 
             &-selected {
-                background: #00FFC4;
+                background: theme-var($green-special-bright);
                 color: theme-var($text-primary);
 
                 &:hover {
-                    background: #00FFC4; 
+                    background: theme-var($green-special-pale);
                 }
             }
         }

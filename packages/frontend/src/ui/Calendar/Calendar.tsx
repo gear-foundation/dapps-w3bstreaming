@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps } from 'react-datepicker';
 import { Button } from '@/ui';
 import { cx } from '@/utils';
+import PlaySVG from '@/assets/icons/play-icon.svg';
 import chevronLeftSVG from '@/assets/icons/chevron-left.svg';
 import chevronRightSVG from '@/assets/icons/chevron-right.svg';
 import styles from './Calendar.module.scss';
-import { CalendarProps } from './Calendar.interfaces';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-function Calendar({ ...props }: CalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const handleDisableTiles = (date: any): boolean => date > new Date().setDate(new Date().getDate() - 1);
+function Calendar() {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const calendarRef = useRef<DatePicker<never, undefined>>(null);
 
-  const handleChangeCalendar = (value: Date | null) => {
+  const handleChangeCalendar = (value: Date) => {
     setSelectedDate(value);
   };
 
@@ -26,7 +26,8 @@ function Calendar({ ...props }: CalendarProps) {
     monthDate,
     decreaseMonth,
     increaseMonth,
-  }: ReactDatePickerCustomHeaderProps): any => {
+    changeMonth,
+  }: ReactDatePickerCustomHeaderProps): JSX.Element => {
     const onPrevMonth = () => {
       decreaseMonth();
     };
@@ -35,24 +36,48 @@ function Calendar({ ...props }: CalendarProps) {
       increaseMonth();
     };
 
+    const goToCurrentDate = () => {
+      const today = new Date();
+
+      setSelectedDate(today);
+      changeMonth(today.getMonth());
+    };
+
     return (
-      <div className={cx(styles['calendar-header'])}>
-        <span className={cx(styles['calendar-header-month'])}>
-          {monthDate.toLocaleDateString('en-US', {
-            month: 'short',
-            year: 'numeric',
-          })}
-        </span>
-        <div className={cx(styles['calendar-header-controls'])}>
-          <Button variant="icon" label="" icon={chevronLeftSVG} onClick={onPrevMonth} />
-          <Button variant="icon" label="" icon={chevronRightSVG} onClick={onNextMonth} />
+      <>
+        <div className={cx(styles['calendar-date-day'])}>
+          <button className={cx(styles['calendar-date-day-name'])} onClick={goToCurrentDate}>
+            Today
+          </button>
+          <div className={cx(styles['calendar-date-day-value'])}>
+            <img src={PlaySVG} alt="play" />
+            <span>
+              {selectedDate.toLocaleDateString('default', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </span>
+          </div>
         </div>
-      </div>
+        <div className={cx(styles['calendar-header'])}>
+          <span className={cx(styles['calendar-header-month'])}>
+            {monthDate.toLocaleDateString('en-US', {
+              month: 'short',
+              year: 'numeric',
+            })}
+          </span>
+          <div className={cx(styles['calendar-header-controls'])}>
+            <Button variant="icon" label="" icon={chevronLeftSVG} onClick={onPrevMonth} />
+            <Button variant="icon" label="" icon={chevronRightSVG} onClick={onNextMonth} />
+          </div>
+        </div>
+      </>
     );
   };
 
-  const handleDayClassname = (date: any) => {
-    if (areDaysEqaual(date, selectedDate as Date)) {
+  const handleDayClassname = (date: Date) => {
+    if (areDaysEqaual(date, selectedDate)) {
       return cx(styles['calendar-day'], styles['calendar-day-selected']);
     }
 
@@ -61,20 +86,23 @@ function Calendar({ ...props }: CalendarProps) {
 
   const handleWeekDayClassname = () => cx(styles['calendar-week-day']);
 
+  const handleDisableTiles = (date: Date): boolean => date.getTime() >= new Date().getTime();
+
   return (
     <div className={cx(styles['calendar-container'])}>
       <DatePicker
-        selected={selectedDate}
-        onChange={handleChangeCalendar}
         inline
-        showPopperArrow={false}
         fixedHeight
+        disabledKeyboardNavigation
+        showPopperArrow={false}
+        selected={selectedDate}
+        formatWeekDay={(day) => day.substring(0, 3)}
+        onChange={handleChangeCalendar}
         renderCustomHeader={handleRenderCustomHeader}
         dayClassName={handleDayClassname}
         weekDayClassName={handleWeekDayClassname}
-        formatWeekDay={(day) => day.substring(0, 3)}
         filterDate={handleDisableTiles}
-        {...props}>
+        ref={calendarRef}>
         <div />
       </DatePicker>
     </div>
