@@ -56,9 +56,7 @@ function DropzoneUploader() {
             </div>
           )}
         </>
-      ) : (
-        <div />
-      )}
+      ) : null}
       {preview && (
         <div className={cx(styles['uploaded-pic-wrapper'])}>
           <img src={preview} alt="preview" className={cx(styles['uploaded-pic'])} />
