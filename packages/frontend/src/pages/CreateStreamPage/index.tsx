@@ -1,5 +1,7 @@
+import { LayoutCreateForm } from '@/features/CreateStream/components/LayoutCreateForm';
+
 function CreateStreamPage() {
-  return <div>Create stream page</div>;
+  return <LayoutCreateForm />;
 }
 
 export { CreateStreamPage };
