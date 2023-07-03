@@ -1,0 +1,98 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.calendar-container {
+    :global(.react-datepicker) {
+        border: none;
+        width: 380px;
+    }
+
+    :global(.react-datepicker__header) {
+        padding: 0;
+        background: transparent;
+        border: none;
+    }
+
+    :global(.react-datepicker__month) {
+        margin: 0px;
+    }
+}
+
+.calendar {
+    &-header {
+        padding-bottom: 13px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: transparent;
+
+        &-month {
+            font-size: 16px;
+            font-weight: 500;
+            padding-top: 6px;
+        }
+
+        &-controls {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+    }
+
+    &-week-day {
+        &#{&} {
+            width: 32px;
+            height: 32px;
+            margin: 3px 13px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #909090;
+
+            &:first-child {
+                margin-left: 0px;
+            }
+
+            &:last-child {
+                margin-right: 0px;
+            }
+        }
+    }
+
+    &-day {
+        &#{&} {
+            width: 32px;
+            height: 32px;
+            margin: 3px 13px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+
+            &:first-child {
+                margin-left: 0px;
+            }
+
+            &:last-child {
+                margin-right: 0px;
+            }
+
+            &:hover {
+                background: rgba(0, 255, 196, 0.2)
+            }
+
+            &-selected {
+                background: #00FFC4;
+                color: theme-var($text-primary);
+
+                &:hover {
+                    background: #00FFC4; 
+                }
+            }
+        }
+    }
+}
