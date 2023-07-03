@@ -11,7 +11,7 @@ $table-text-weekday-cell: --table-text-weekday-cell;
 $table-background-day-cell: --table-background-day-cell;
 $text-section-title: --text-section-title;
 $placeholder-input: --placeholder-input;
-
+$border-input: --border-input;
 $error: --error;
 
 //ui-kit colors
@@ -34,5 +34,6 @@ $theme-standard: (
     $table-text-weekday-cell: #909090,
     $text-section-title: #292929,
     $table-background-day-cell: rgba(0, 255, 196, 0.2),
-    $placeholder-input: rgba(0, 255, 196, 0.2),
+    $placeholder-input: rgba(0, 0, 0, 0.9),
+    $border-input: rgba(0, 0, 0, 0.2),
 );
