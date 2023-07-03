@@ -1,7 +1,6 @@
 import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
 import { cx } from '@/utils';
-import PlaySVG from '@/assets/icons/play-icon.svg';
 import { SectionProps } from './LayoutCreateForm.interface';
 import { TimePicker } from '@/ui/TimePicker';
 import CreateSVG from '@/assets/icons/correct-icon.svg';
@@ -42,13 +41,6 @@ function LayoutCreateForm() {
         </div>
         <div className={cx(styles.right)}>
           <Section title="Stream date">
-            <div className={cx(styles['stream-date-day'])}>
-              <span className={cx(styles['stream-date-day-name'])}>Today</span>
-              <div className={cx(styles['stream-date-day-value'])}>
-                <img src={PlaySVG} alt="play" />
-                <span>20 Jun 2023</span>
-              </div>
-            </div>
             <div className={cx(styles['datepicker-wrapper'])}>
               <Calendar />
             </div>

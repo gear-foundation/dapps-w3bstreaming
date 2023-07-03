@@ -4,7 +4,7 @@
 .wrapper {
     width: 100%;
     padding: 5px 5px 5px 20px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid theme-var($placeholder-input);
     border-radius: 4px;
 }
 
@@ -37,6 +37,6 @@
     &::placeholder {
         font-size: 16px;
         font-weight: 400;
-        color: 1px solid rgba(0, 0, 0, 0.2)
+        color: theme-var($placeholder-input)
     }
 }
