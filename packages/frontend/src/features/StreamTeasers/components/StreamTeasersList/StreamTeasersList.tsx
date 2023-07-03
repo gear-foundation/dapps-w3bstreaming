@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Dropdown, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
@@ -16,14 +16,14 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
-    setTeasers(Object.keys(tes).map((key) => tes[key]));
+    setTeasers(Object.keys(streamTeasers).map((key) => streamTeasers[key]));
   }, [streamTeasers]);
 
   const handleExpandPage = () => {
     setShowedTeasersCount((prev) => prev + streamTeasersToExpand);
   };
 
-  const handleChangedSearchedValue = (e: any) => {
+  const handleChangedSearchedValue = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchedValue(e.target.value);
     const foundTeasers = teasers.filter((teaser) => teaser.title.toLowerCase().includes(e.target.value.toLowerCase()));
 
