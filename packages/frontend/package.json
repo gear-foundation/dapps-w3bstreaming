@@ -6,6 +6,7 @@
     "@craco/craco": "^7.1.0",
     "@types/lodash.merge": "^4.6.7",
     "@types/react-datepicker": "^4.11.2",
+    "env-cmd": "^10.1.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -54,7 +55,8 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build"
+    "build": "env-cmd -f .env.development.local craco build",
+    "build:prod": "env-cmd -f .env.production.local craco build"
   },
   "eslintConfig": {
     "extends": "react-app"
