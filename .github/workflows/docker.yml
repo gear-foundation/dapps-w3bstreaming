@@ -47,6 +47,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
           build-args: |
             WS_ADDRESS=${{ secrets.WS_ADDRESS }}
+            REACT_APP_SIGNALING_SERVER=${{ secrets.REACT_APP_SIGNALING_SERVER }}
             PATH_TO_STATE_WASM=${{ secrets.PATH_TO_STATE_WASM }}
             PROGRAM_ID=${{ secrets.PROGRAM_ID }}
 

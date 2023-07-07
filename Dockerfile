@@ -17,9 +17,11 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2023-04-25 && rustup target add wasm32-unknown-unknown
 
 ARG WS_ADDRESS \
+    REACT_APP_SIGNALING_SERVER \
     PATH_TO_STATE_WASM \
     PROGRAM_ID
 ENV WS_ADDRESS=${WS_ADDRESS} \
+    REACT_APP_SIGNALING_SERVER=${REACT_APP_SIGNALING_SERVER} \
     PATH_TO_STATE_WASM=${PATH_TO_STATE_WASM} \
     PROGRAM_ID=${PROGRAM_ID}
 
