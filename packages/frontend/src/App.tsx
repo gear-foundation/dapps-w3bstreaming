@@ -23,7 +23,7 @@ function AppComponent() {
 
   console.log(process.env);
 
-  const socket: any = io(address);
+  const socket: any = io('wss://w3bstreaming.vara-network.io:3000/ws/');
 
   return (
     <div className={cx(styles['app-container'])}>
