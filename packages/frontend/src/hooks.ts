@@ -66,4 +66,17 @@ function useClickOutside(handler: Handler, ...refs: (RefObject<HTMLElement> | Mu
   }, [refs, handler]);
 }
 
-export { useProgramMetadata, useContractAddressSetup, useClickOutside };
+function useMetadata(source: RequestInfo | URL) {
+  const [data, setData] = useState<ProgramMetadata>();
+
+  useEffect(() => {
+    fetch(source)
+      .then((res) => res.text() as Promise<string>)
+      .then((raw) => getProgramMetadata(`0x${raw}`))
+      .then((meta) => setData(meta));
+  }, [source]);
+
+  return data;
+}
+
+export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMetadata };

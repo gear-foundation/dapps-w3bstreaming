@@ -1,23 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getProgramMetadata, ProgramMetadata } from '@gear-js/api';
 import { useAlert, useAccount } from '@gear-js/react-hooks';
 import { Buffer } from 'buffer';
 import { LOCAL_STORAGE } from '@/consts';
 import { WALLET } from './consts';
 import { WalletId } from './types';
-
-function useMetadata(source: RequestInfo | URL) {
-  const [data, setData] = useState<ProgramMetadata>();
-
-  useEffect(() => {
-    fetch(source)
-      .then((res) => res.text() as Promise<string>)
-      .then((raw) => getProgramMetadata(`0x${raw}`))
-      .then((meta) => setData(meta));
-  }, [source]);
-
-  return data;
-}
 
 function useWasmMetadata(source: RequestInfo | URL) {
   const alert = useAlert();
@@ -55,4 +41,4 @@ function useWallet() {
   return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
 }
 
-export { useMetadata, useWasmMetadata, useWallet };
+export { useWasmMetadata, useWallet };

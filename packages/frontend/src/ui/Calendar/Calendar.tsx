@@ -1,20 +1,22 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps } from 'react-datepicker';
 import { Button } from '@/ui';
 import { cx } from '@/utils';
 import PlaySVG from '@/assets/icons/play-icon.svg';
 import chevronLeftSVG from '@/assets/icons/chevron-left.svg';
 import chevronRightSVG from '@/assets/icons/chevron-right.svg';
+import { CalendarProps } from './Calendar.interfaces';
 import styles from './Calendar.module.scss';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-function Calendar() {
+function Calendar({ onChange }: CalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const calendarRef = useRef<DatePicker<never, undefined>>(null);
 
   const handleChangeCalendar = (value: Date) => {
     setSelectedDate(value);
+    onChange?.(value);
   };
 
   const areDaysEqaual = (date1: Date, date2: Date) =>
