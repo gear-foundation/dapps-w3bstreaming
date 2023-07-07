@@ -1,5 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { cx } from '@/utils';
+import arrowDownSVG from '@/assets/icons/arrow-filled-down-icon.svg';
 import styles from './Table.module.scss';
 import {
   TableBodyProps,
@@ -12,6 +13,7 @@ import {
 } from './Table.interfaces';
 import { Pagination } from '../Pagination';
 import { Search } from '../Search';
+import { Button } from '../Button';
 
 function Cell({ className, children }: TableCellProps) {
   return <th className={cx(styles.cell, className)}>{children}</th>;
@@ -37,10 +39,18 @@ function Body({ children }: TableBodyProps) {
   return <tbody className={cx(styles.body)}>{children}</tbody>;
 }
 
-function Table({ rows, columns, pagination, searchParams, renderCell, renderHeaderCell, className }: TableProps) {
+function Table({
+  rows,
+  columns,
+  pagination,
+  searchParams,
+  sortedColumns,
+  renderCell,
+  renderHeaderCell,
+  className,
+}: TableProps) {
   const [tableData, setTableData] = useState<TableRow[]>(rows || []);
   const [searchedValue, setSearchedValue] = useState<string>('');
-
   const [currentRows, setCurrentRows] = useState<TableRow[]>(rows || []);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -66,6 +76,10 @@ function Table({ rows, columns, pagination, searchParams, renderCell, renderHead
     }
   }, [searchedValue, columns, rows, searchParams]);
 
+  const handleSortData = (column: string) => {
+    setTableData((prev) => prev.sort((a: TableRow, b: TableRow) => ((a[column] || a) > (b[column] || b) ? 1 : -1)));
+  };
+
   useEffect(() => {
     handleCalculateCurrentRows();
   }, [handleCalculateCurrentRows]);
@@ -88,9 +102,14 @@ function Table({ rows, columns, pagination, searchParams, renderCell, renderHead
       <div className={cx(styles['table-wrapper'])}>
         <table className={cx(styles.table)}>
           <Header>
-            {columns.map((item) => (
-              <HeaderCell key={item} className={className.headerCell}>
-                {renderHeaderCell ? renderHeaderCell(item) : item}
+            {columns.map((column) => (
+              <HeaderCell key={column} className={className.headerCell}>
+                <>
+                  {renderHeaderCell ? renderHeaderCell(column) : column}
+                  {sortedColumns?.includes(column) && (
+                    <Button variant="icon" label="" icon={arrowDownSVG} onClick={() => handleSortData(column)} />
+                  )}
+                </>
               </HeaderCell>
             ))}
           </Header>

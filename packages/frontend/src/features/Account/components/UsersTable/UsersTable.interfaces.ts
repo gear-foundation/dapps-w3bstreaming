@@ -21,4 +21,5 @@ export interface UsersTableProps {
   searchParams: {
     column: string;
   };
+  sortedColumns?: string[];
 }
