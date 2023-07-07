@@ -1,64 +1,96 @@
-use gstd::{exec, msg, prelude::*, BTreeMap};
-use web3streaming_io::{Action, ActionResult, Stream};
+use gstd::{exec, msg, prelude::*};
+use web3streaming_io::{Action, ActionResult, Contract, Profile, Role, Stream, Subscription};
 
-static mut STREAMS: BTreeMap<String, Stream> = BTreeMap::new();
+static mut CONTRACT: Option<Contract> = None;
 
 #[no_mangle]
 extern "C" fn handle() {
     let input: Action = msg::load().expect("Unable to load message");
-    unsafe {
-        match input {
-            Action::NewStream {
-                timestamp,
-                title,
-                description,
-            } => {
-                let stream_id = String::from(exec::block_timestamp().to_string()) + &title;
-                STREAMS.insert(
-                    stream_id.clone(),
-                    Stream {
-                        broadcaster: msg::source(),
-                        timestamp,
-                        title,
-                        description,
-                        watchers: Vec::new(),
-                    },
-                );
-                msg::reply(ActionResult::StreamIsScheduled { id: stream_id }, 0)
-                    .expect("Unable to send reply");
+    let contract = unsafe { CONTRACT.as_mut().expect("The contract is not initialized") };
+
+    match input {
+        Action::NewStream {
+            title,
+            description,
+            start_time,
+            end_time,
+            img_link,
+        } => {
+            let stream_id = String::from(exec::block_timestamp().to_string()) + &title;
+            if let Some(profile) = contract.users.get_mut(&msg::source()) {
+                profile.stream_ids.push(stream_id.clone());
+            } else {
+                panic!("Account is no registered");
             }
-            Action::SubscribeToStream { id } => {
-                let stream = STREAMS.get_mut(&id);
-                if stream.is_none() {
-                    msg::reply(ActionResult::Error(String::from("Stream not found")), 0)
-                        .expect("Unable to send reply");
-                } else {
-                    let s = stream.unwrap();
-                    s.watchers.push(msg::source());
-                    msg::reply(ActionResult::Subscribed { id }, 0).expect("Unable to send reply");
-                }
+            contract.streams.insert(
+                stream_id.clone(),
+                Stream {
+                    broadcaster: msg::source(),
+                    img_link,
+                    start_time,
+                    end_time,
+                    title,
+                    description,
+                    watchers: Vec::new(),
+                },
+            );
+            msg::reply(ActionResult::StreamIsScheduled { id: stream_id }, 0)
+                .expect("Unable to send reply");
+        }
+        Action::Subscribe { account_id } => {
+            if contract.users.get(&account_id).is_none() {
+                panic!("The user is not found");
             }
-            Action::FinishStream { id } => {
-                let stream = STREAMS.remove(&id);
-                if stream.is_some() {
-                    msg::reply(ActionResult::StreamIsFinished { id }, 0)
-                        .expect("Unable to send reply");
-                } else {
-                    msg::reply(ActionResult::Error(String::from("Stream not found")), 0)
-                        .expect("Unable to send reply");
-                }
+
+            if contract.users.get(&msg::source()).is_none() {
+                panic!("You are not registered");
             }
+
+            contract
+                .users
+                .entry(account_id)
+                .and_modify(|profile| profile.subscribers.push(msg::source()));
+
+            contract.users.entry(msg::source()).and_modify(|profile| {
+                profile.subscriptions.push(Subscription {
+                    account_id,
+                    sub_date: exec::block_timestamp(),
+                    next_write_off: None,
+                })
+            });
+
+            msg::reply(ActionResult::Subscribed, 0).expect("Unable to send reply");
+        }
+        Action::EditProfile {
+            name,
+            surname,
+            img_link,
+        } => {
+            contract
+                .users
+                .entry(msg::source())
+                .and_modify(|profile| {
+                    profile.name = name.clone();
+                    profile.surname = surname.clone();
+                    profile.img_link = img_link.clone();
+                })
+                .or_insert_with(|| Profile {
+                    name,
+                    surname,
+                    img_link,
+                    stream_ids: Vec::new(),
+                    subscribers: Vec::new(),
+                    subscriptions: Vec::new(),
+                    role: Role::Speaker,
+                });
+
+            msg::reply(ActionResult::ProfileEdited, 0).expect("Unable to send reply");
         }
     };
 }
 
 #[no_mangle]
 extern "C" fn state() {
-    msg::reply(unsafe { STREAMS.clone() }, 0).expect("Error in state");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
+    let contract = unsafe { CONTRACT.as_ref().expect("The contract is not initiaized") };
+    msg::reply(contract, 0).expect("Error in state");
 }
