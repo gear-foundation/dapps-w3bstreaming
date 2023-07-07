@@ -21,6 +21,8 @@ function AppComponent() {
   const isAppReady = isApiReady && isAccountReady;
   const address = process.env.REACT_APP_SIGNALING_SERVER || 'http://127.0.0.1:3001';
 
+  console.log(process.env);
+
   const socket: any = io(address);
 
   return (
