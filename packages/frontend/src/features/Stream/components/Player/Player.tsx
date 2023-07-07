@@ -2,7 +2,6 @@ import React from 'react';
 import videojs from 'video.js';
 import styles from './Player.module.scss';
 import { cx } from '@/utils';
-import vid from '@/assets/fddf.mp4';
 import { PlayerProps } from './Player.interfaces';
 import 'video.js/dist/video-js.css';
 

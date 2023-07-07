@@ -4,7 +4,6 @@ import { web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
 import { useAccount } from '@gear-js/react-hooks';
-import vid from '@/assets/fddf.mp4';
 import styles from './Watch.module.scss';
 import { cx } from '@/utils';
 import { StreamState } from './Watch.interface';
