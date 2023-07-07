@@ -11,7 +11,7 @@ build_contract:
 
 build_js:
 	@echo ⚙️ Building js packages...
-	@npm run build
+	@npm run build:prod
 
 build: build_contract build_js
 
@@ -19,7 +19,7 @@ run_server:
 	@cd packages/signaling-server && npm run start
 
 run_fe:
-	@cd packages/frontend && npm run build:prod
+	@cd packages/frontend && npm run start
 
 dev_server:
 	@cd packages/signaling-server && npm run watch
