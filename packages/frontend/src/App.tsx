@@ -19,7 +19,7 @@ function AppComponent() {
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
-  const address = process.env.REACT_APP_SIGNALING_SERVER || 'http://127.0.0.1:3001';
+  const address = 'wss://w3bstreaming.vara-network.io:3000';
 
   console.log(process.env);
 
