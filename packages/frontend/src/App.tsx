@@ -19,11 +19,11 @@ function AppComponent() {
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
-  const address = 'wss://w3bstreaming.vara-network.io:3000';
+  const address = 'wss://w3bstreaming.vara-network.io';
 
   console.log(process.env);
 
-  const socket: any = io('wss://w3bstreaming.vara-network.io');
+  const socket: any = io('wss://w3bstreaming.vara-network.io/');
 
   return (
     <div className={cx(styles['app-container'])}>
