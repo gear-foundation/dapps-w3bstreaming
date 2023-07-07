@@ -31,6 +31,7 @@ export type StreamTeaser =
   | undefined;
 
 export interface FormattedTeaser {
+  id: string;
   broadcaster: HexString;
   timestamp: string;
   title: string;

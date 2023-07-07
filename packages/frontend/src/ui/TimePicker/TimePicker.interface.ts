@@ -1,1 +1,3 @@
-export interface TimePickerProps {}
+export interface TimePickerProps {
+  onChange?: (time: string | null) => void;
+}

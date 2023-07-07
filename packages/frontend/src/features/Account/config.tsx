@@ -2,42 +2,42 @@ import { UsersTable } from './components/UsersTable';
 import { SUBSCRIBERS_USERS_TABLE_COLUMNS, SUBSCRIPTIONS_USERS_TABLE_COLUMNS } from './consts';
 
 export const subscriptionsMocked = [
-  // {
-  //   id: 1,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
-  // {
-  //   id: 2,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
-  // {
-  //   id: 3,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
-  // {
-  //   id: 4,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
-  // {
-  //   id: 5,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
-  // {
-  //   id: 6,
-  //   Streamer: 'John Bin',
-  //   'Subscription Date': '10.08.2023',
-  //   'Date of next write-off': '13.09.2023',
-  // },
+  {
+    id: 1,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
+  {
+    id: 2,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
+  {
+    id: 3,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
+  {
+    id: 4,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
+  {
+    id: 5,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
+  {
+    id: 6,
+    Streamer: 'John Bin',
+    'Subscription Date': '10.08.2023',
+    'Date of next write-off': '13.09.2023',
+  },
 ];
 
 export const subscribersMocked = [
@@ -51,7 +51,7 @@ export const subscribersMocked = [
   },
   {
     id: 2,
-    User: 'John Bin',
+    User: 'Aohn Bin',
     'Subscription Date': '10.08.2023',
     'Last payment date': '10.08.2023',
     'Date of next write-off': '13.09.2023',
@@ -65,7 +65,7 @@ export const subscribersMocked = [
   },
   {
     id: 4,
-    User: 'John Bin',
+    User: 'Lohn Bin',
     'Subscription Date': '10.08.2023',
     'Last payment date': '10.08.2023',
     'Date of next write-off': '13.09.2023',
@@ -79,21 +79,21 @@ export const subscribersMocked = [
   },
   {
     id: 6,
-    User: 'John Bin',
+    User: 'Gohn Bin',
     'Subscription Date': '10.08.2023',
     'Last payment date': '10.08.2023',
     'Date of next write-off': '13.09.2023',
   },
   {
     id: 7,
-    User: 'John Bin',
+    User: 'Eohn Bin',
     'Subscription Date': '10.08.2023',
     'Last payment date': '10.08.2023',
     'Date of next write-off': '13.09.2023',
   },
   {
     id: 8,
-    User: 'John Bin',
+    User: 'Pohn Bin',
     'Subscription Date': '10.08.2023',
     'Last payment date': '10.08.2023',
     'Date of next write-off': '13.09.2023',
@@ -136,6 +136,7 @@ export const tabs = {
         data={subscriptionsMocked}
         columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS}
         searchParams={{ column: 'Streamer' }}
+        sortedColumns={['Streamer', 'Subscription Date', 'Date of next write-off']}
       />
     ),
   },
@@ -146,6 +147,7 @@ export const tabs = {
         data={subscribersMocked}
         columns={SUBSCRIBERS_USERS_TABLE_COLUMNS}
         searchParams={{ column: 'User' }}
+        sortedColumns={['User', 'Subscription Date', 'Last payment date', 'Date of next write-off']}
       />
     ),
   },

@@ -1,0 +1,22 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.layout {
+    width: 1200px;
+    height: 760px;
+}
+
+.player-container {
+    position: relative;
+}
+
+.player {
+    width: 1200px;
+    height: 760px;
+}
+
+.player-controls {
+    height: 80px;
+    width: 100%;
+    background: #00000033;
+}

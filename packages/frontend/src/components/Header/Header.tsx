@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
 import Identicon from '@polkadot/react-identicon';
 import { useLocation } from 'react-router-dom';
 import { Button, Link } from '@ui';
@@ -8,16 +8,26 @@ import { WalletModal } from '@/features/Wallet/components';
 import { cx } from '@/utils';
 import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo-vara-black.png';
-import coin from '@/assets/icons/wara-coin-silver.png';
+import coin from '@/assets/icons/vara-coin-silver.png';
 import { HeaderProps } from './Header.interfaces';
 import { ADDRESS } from '@/consts';
-import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
+import { CONTRACT_ADDRESS_ATOM, STREAM_TEASERS_ATOM } from '@/atoms';
+import { useStreamTeasersState } from '@/features/StreamTeasers/hooks';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
   const address = useAtom(CONTRACT_ADDRESS_ATOM);
+  const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
+
+  const streamTeasers = useStreamTeasersState();
+
+  useEffect(() => {
+    if (streamTeasers) {
+      setStreamTeasers(streamTeasers);
+    }
+  }, [streamTeasers, setStreamTeasers]);
 
   const handleOpenWalletModal = () => {
     setIsWalletModalOpen(true);
@@ -26,7 +36,6 @@ function Header({ menu }: HeaderProps) {
   const handleCloseWalletModal = () => {
     setIsWalletModalOpen(false);
   };
-
   return (
     <>
       <header className={cx(styles.header)}>
