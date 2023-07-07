@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Dropdown, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
@@ -16,7 +17,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
-    setTeasers(Object.keys(streamTeasers).map((key) => streamTeasers[key]));
+    setTeasers(Object.keys(streamTeasers).map((key) => ({ ...streamTeasers[key], id: key })));
   }, [streamTeasers]);
 
   const handleExpandPage = () => {
@@ -56,7 +57,9 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       </div>
       <div className={cx(styles.content)}>
         {showedTeasers.slice(0, showedTeasersCount).map((item) => (
-          <StreamTeaser key={item.title + item.description + item.timestamp} {...item} />
+          <Link to={`/stream/${item.id}`}>
+            <StreamTeaser key={item.title + item.description + item.timestamp} {...item} />
+          </Link>
         ))}
       </div>
       {!showedTeasers.length && searchedValue ? (

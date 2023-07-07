@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
+import { io } from 'socket.io-client';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
@@ -16,6 +19,8 @@ function AppComponent() {
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
+
+  const socket: any = io('http://127.0.0.1:3001');
 
   return (
     <div className={cx(styles['app-container'])}>
@@ -45,7 +50,7 @@ function AppComponent() {
                 path={`/${STREAM}`}
                 element={
                   <ProtectedRoute>
-                    <StreamPage />
+                    <StreamPage socket={socket} />
                   </ProtectedRoute>
                 }
               />
