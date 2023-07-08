@@ -7,7 +7,7 @@ const main = async () => {
   console.log(`Connected to ${await api.chain()}`);
   await isMetaReady;
   console.log(`Metadata initialized`);
-  server.listen(Number(config.port), '0.0.0.0', () => {
+  server.listen(config.port, () => {
     console.log(`Server is running on port ${config.port}`);
   });
 };
