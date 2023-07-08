@@ -39,10 +39,11 @@ io.on('connection', socket => {
   socket.on('broadcast', (id: string, msg: IBroadcastMsg) => {
     connections.set(id, socket);
     streams.set(msg.streamId, id);
-    console.log('broadcasting');
+    console.log('BROADCASTING');
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
+    console.log(`WATCH ADDRESS ${id}`);
     if (!streams.has(msg.streamId)) {
       return socket.emit('error', {
         message: `Stream with id ${msg.streamId} hasn't started yet`,
@@ -60,6 +61,8 @@ io.on('connection', socket => {
         message: `You aren't subscribed to stream with id ${msg.streamId}`,
       });
     }
+
+    console.log(`WATCH ADDRESS SUCCESS ${id}`);
 
     const broadcasterId = streams.get(msg.streamId) as string;
 

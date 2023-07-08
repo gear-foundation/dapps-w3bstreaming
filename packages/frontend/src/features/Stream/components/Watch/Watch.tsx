@@ -120,7 +120,7 @@ function Watch({ socket, id, broadcasterId }: any) {
 
   return (
     <div className={cx(styles.layout)}>
-      {/* {streamStatus === 'not-subscribed' && (
+      {streamStatus === 'not-subscribed' && (
         <div className={cx(styles['broadcast-not-available'])}>
           <h3>Broadcast not available</h3>
           <span>In order to watch the broadcast, you need to subscribe to this streamer</span>
@@ -130,7 +130,7 @@ function Watch({ socket, id, broadcasterId }: any) {
         <div className={cx(styles['broadcast-not-available'])}>
           <h3>Stream in not started yet</h3>
         </div>
-      )} */}
+      )}
       <button onClick={onStart}>Start</button>
       <video
         className={cx(styles.player)}
