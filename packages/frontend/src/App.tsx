@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useSetAtom } from 'jotai';
 import { io } from 'socket.io-client';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
@@ -9,7 +7,7 @@ import { withProviders } from '@/hocs';
 import { cx } from '@/utils';
 import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
 import { StreamTeasersList } from '@/features/StreamTeasers';
-import { ProtectedRoute } from '@/features/Auth/components/ProtectedRoute/ProtectedRoute';
+import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';
@@ -30,7 +28,14 @@ function AppComponent() {
           <Header menu={routes} />
           <div className={cx(styles['main-content'])}>
             <Routes>
-              <Route path="/" element={<MainPage />} />
+              <Route
+                path="/"
+                element={
+                  <AuthRoute>
+                    <MainPage />
+                  </AuthRoute>
+                }
+              />
               <Route
                 path={`/${ACCOUNT}`}
                 element={

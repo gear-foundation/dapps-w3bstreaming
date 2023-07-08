@@ -1,6 +1,6 @@
 import { cx } from '@/utils';
 import styles from './Footer.module.scss';
-import logo from '@/assets/icons/logo-vara-black.png';
+import logo from '@/assets/icons/logo.png';
 import web from '@/assets/icons/web-icon.png';
 import discord from '@/assets/icons/discord-icon.png';
 import git from '@/assets/icons/git-icon.png';

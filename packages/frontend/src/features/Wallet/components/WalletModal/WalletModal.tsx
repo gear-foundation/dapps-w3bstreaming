@@ -1,6 +1,7 @@
+import { useNavigate } from 'react-router';
 import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
-import { useAccount, useApi } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { Modal } from 'components';
 import { cx, copyToClipboard } from '@/utils';
 import copyToClipboardSVG from '@/assets/icons/binary-code.svg';
@@ -9,7 +10,7 @@ import exitSVG from '@/assets/icons/exit-icon.svg';
 import { WALLET } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../WalletItem';
-import { WalletEntry, WalletId } from '../../types';
+import { WalletId } from '../../types';
 
 import styles from './WalletModal.module.scss';
 import { Button } from '@/ui';
@@ -19,6 +20,7 @@ function WalletModal({ onClose }: WalletModalProps) {
   const { extensions, account, login, logout } = useAccount();
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
     useWallet();
+  const navigate = useNavigate();
 
   const getWallets = () =>
     Object.entries(WALLET).map(([id, { SVG, name }]) => {
@@ -48,7 +50,9 @@ function WalletModal({ onClose }: WalletModalProps) {
       const isActive = address === account?.address;
 
       const handleClick = () => {
-        login(_account);
+        login(_account).then(() => {
+          navigate('/account');
+        });
         saveWallet();
         onClose();
       };

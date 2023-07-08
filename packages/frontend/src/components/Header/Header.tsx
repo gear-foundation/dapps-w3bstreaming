@@ -7,7 +7,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { WalletModal } from '@/features/Wallet/components';
 import { cx } from '@/utils';
 import styles from './Header.module.scss';
-import logo from '@/assets/icons/logo-vara-black.png';
+import logo from '@/assets/icons/logo.png';
 import coin from '@/assets/icons/vara-coin-silver.png';
 import { HeaderProps } from './Header.interfaces';
 import { ADDRESS } from '@/consts';
