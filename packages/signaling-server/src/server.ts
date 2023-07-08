@@ -86,14 +86,12 @@ io.on('connection', socket => {
   });
 
   socket.on('answer', (id, msg: IAnswerMsg) => {
-    if (connections.has(msg.broadcasterId)) {
-      connections.get(msg.broadcasterId)?.emit('answer', id, msg);
+    if (connections.has(id)) {
+      connections.get(id)?.emit('answer', id, msg);
     }
   });
 
   socket.on('candidate', (id, msg: ICandidateMsg) => {
-    // console.log(msg.candidate);
-    console.log(connections.has(msg.id));
     if (connections.has(msg.id)) {
       connections.get(msg.id)?.emit('candidate', id, msg);
     }

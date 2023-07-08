@@ -2,9 +2,9 @@
 export const RTC_CONFIG = {
   iceServers: [
     {
-      urls: 'turn:52.53.225.230:3478',
+      urls: 'turn:turn-server.vara-network.io:3478',
       username: 'gear',
-      credential: 'gear789',
+      credential: 'password',
     },
   ],
 };

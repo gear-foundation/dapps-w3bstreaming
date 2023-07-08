@@ -45,7 +45,7 @@ function Watch({ socket, id, broadcasterId }: any) {
         .then(() => peerConnection?.createAnswer())
         .then((answer: any) => peerConnection?.setLocalDescription(answer))
         .then(() => {
-          socket.emit('answer', account?.address, {
+          socket.emit('answer', msg.userId, {
             broadcasterId: broadcasterAddress,
             description: peerConnection?.currentLocalDescription,
           });
