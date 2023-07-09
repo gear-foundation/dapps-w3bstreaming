@@ -17,10 +17,9 @@ function AppComponent() {
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
-  const address = process.env.REACT_APP_SIGNALING_SERVER || 'http://127.0.0.1:3001'; //https://w3bstreaming-backend.vara-network.io/
+  const address = process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001';
 
-  // const socket: any = io(`${address}/`);
-  const socket: any = io('https://w3bstreaming-backend.vara-network.io/');
+  const socket: any = io(`${address}/`);
 
   return (
     <div className={cx(styles['app-container'])}>

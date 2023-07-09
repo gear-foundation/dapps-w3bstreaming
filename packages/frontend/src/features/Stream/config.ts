@@ -1,8 +1,7 @@
-// export const RTC_CONFIG = { iceServers: [{ urls: 'stun:stun.deutscherskiverband.de:3478' }] };
 export const RTC_CONFIG = {
   iceServers: [
     {
-      urls: 'turn:turn-server.vara-network.io:3478',
+      urls: ['stun:stun.l.google.com:19302', 'turn:turn-server.vara-network.io:3478'],
       username: 'gear',
       credential: 'password',
     },

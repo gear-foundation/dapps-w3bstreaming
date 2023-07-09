@@ -1,5 +1,4 @@
-import { MutableRefObject, useEffect, useId, useRef, useState } from 'react';
-import { useParams } from 'react-router';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
@@ -22,49 +21,42 @@ interface ICandidateMsg {
   candidate: RTCIceCandidate;
 }
 
-function Watch({ socket, id, broadcasterId }: any) {
+function Watch({ socket, streamId }: any) {
   const remoteVideo: MutableRefObject<any> = useRef(null);
   const [localStream, setLocalStream] = useState<HTMLAudioElement | null>(null);
   let peerConnection: RTCPeerConnection | null = null;
   const { account } = useAccount();
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
-  const { id: streamId } = useParams();
   const [streamStatus, setStreamStatus] = useState<StreamState>('loading');
-  console.log(streamId);
 
   const onStart = () => {
     socket.emit('watch', account?.address, {
-      streamId: id,
+      streamId,
       signedMsg: publicKey?.signature,
     });
 
     socket.on('offer', (broadcasterAddress: string, msg: IOfferMsg) => {
       peerConnection = new RTCPeerConnection(RTC_CONFIG);
       peerConnection
-        .setRemoteDescription(msg.description)
+        ?.setRemoteDescription(msg.description)
         .then(() => peerConnection?.createAnswer())
         .then((answer: any) => peerConnection?.setLocalDescription(answer))
         .then(() => {
-          socket.emit('answer', msg.userId, {
-            broadcasterId: broadcasterAddress,
+          socket.emit('answer', broadcasterAddress, {
+            watcherId: account?.address,
             description: peerConnection?.currentLocalDescription,
           });
         });
 
-      peerConnection.ontrack = (event: any) => {
-        console.log(event);
+      peerConnection!.ontrack = (event: any) => {
         setLocalStream(event.streams[0]);
       };
 
-      peerConnection.onicecandidate = (event: any) => {
-        console.log('WATCHER ON');
-        console.log(event.candidate);
-        console.log(account?.address);
-        console.log(broadcasterId);
+      peerConnection!.onicecandidate = (event: any) => {
         if (event.candidate) {
-          socket.emit('candidate', account?.address, {
+          socket.emit('candidate', broadcasterAddress, {
             candidate: event.candidate,
-            id: broadcasterAddress,
+            id: account?.address,
           });
         }
       };
@@ -80,11 +72,7 @@ function Watch({ socket, id, broadcasterId }: any) {
     });
 
     socket.on('candidate', (_: string, msg: ICandidateMsg) => {
-      console.log('WATCHER ADD');
-      console.log(msg.candidate);
-      const cand = new RTCIceCandidate(msg.candidate);
-
-      peerConnection?.addIceCandidate(cand).catch((e: any) => console.error(e));
+      peerConnection?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
     });
   };
 
@@ -95,13 +83,7 @@ function Watch({ socket, id, broadcasterId }: any) {
     }
   }, [localStream]);
 
-  useEffect(() => {
-    console.log('watcch');
-    return () => {
-      console.log('disconnected');
-      socket.emit('disconnect');
-    };
-  }, [socket]);
+  useEffect(() => () => socket.emit('disconnect'), [socket]);
 
   useEffect(() => {
     if (account?.address && !publicKey) {

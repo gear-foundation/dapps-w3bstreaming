@@ -16,7 +16,7 @@ export interface IOfferMsg {
 }
 
 export interface IAnswerMsg {
-  broadcasterId: string;
+  watcherId: string;
   description: RTCSessionDescription;
 }
 

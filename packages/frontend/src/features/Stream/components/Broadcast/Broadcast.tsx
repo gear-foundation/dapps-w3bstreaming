@@ -1,5 +1,4 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './Broadcast.module.scss';
 import { cx } from '@/utils';
@@ -12,7 +11,7 @@ interface IWatchMsg {
 }
 
 interface IAnswerMsg {
-  broadcasterId: string;
+  watcherId: string;
   description: RTCSessionDescription;
 }
 
@@ -20,10 +19,9 @@ interface ICandidateMsg {
   id: string;
   candidate: RTCIceCandidate;
 }
-function Broadcast({ socket }: any) {
+function Broadcast({ socket, streamId }: any) {
   const [localStream, setLocalStream] = useState<any>(null);
   const localVideo: MutableRefObject<any> = useRef(null);
-  const { id: streamId } = useParams();
   let peerConnection: RTCPeerConnection | null = null;
   const conns: any = {};
 
@@ -43,18 +41,14 @@ function Broadcast({ socket }: any) {
       })
       .then((s) => {
         socket.emit('broadcast', account?.address, { streamId });
-        console.log('started');
 
         socket.on('watch', (idOfWatcher: string, msg: IWatchMsg) => {
-          console.log('someones connected');
           peerConnection = new RTCPeerConnection(RTC_CONFIG);
           conns[idOfWatcher] = peerConnection;
           s.getTracks().forEach((t: any) => peerConnection?.addTrack(t, s));
-          peerConnection.onicecandidate = (event) => {
-            console.log('STREAMER ON');
-            console.log(event.candidate);
+          peerConnection.onicecandidate = (event: any) => {
             if (event.candidate) {
-              socket.emit('candidate', idOfWatcher, { id: account?.address, candidate: event.candidate });
+              socket.emit('candidate', idOfWatcher, { id: account.address, candidate: event.candidate });
             }
           };
 
@@ -69,23 +63,15 @@ function Broadcast({ socket }: any) {
               }),
             );
         });
-
-        socket.on('candidate', (idOfWatcher: string, msg: ICandidateMsg) => {
-          console.log('STREAMER ADD');
-          console.log(msg.candidate);
-          const cand = new RTCIceCandidate(msg.candidate);
-
-          if (cand.usernameFragment === msg.candidate.usernameFragment) {
-            return;
-          }
-
-          conns[idOfWatcher]?.addIceCandidate(cand).catch((e: any) => console.error(e));
-        });
-
-        socket.on('answer', (socketIdOfWatcher: string, msg: IAnswerMsg) => {
-          conns[socketIdOfWatcher]?.setRemoteDescription(msg.description);
-        });
       });
+
+    socket.on('candidate', (idOfWatcher: string, msg: ICandidateMsg) => {
+      conns[idOfWatcher]?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
+    });
+
+    socket.on('answer', (_: string, msg: IAnswerMsg) => {
+      conns[msg.watcherId]?.setRemoteDescription(msg.description);
+    });
   }
 
   useEffect(() => {
@@ -95,13 +81,7 @@ function Broadcast({ socket }: any) {
     }
   }, [localStream]);
 
-  useEffect(() => {
-    console.log('watcch');
-    return () => {
-      console.log('disconnected');
-      socket.emit('disconnect');
-    };
-  }, [socket]);
+  useEffect(() => () => socket.emit('disconnect'), [socket]);
 
   return (
     <div className={cx(styles.layout)}>

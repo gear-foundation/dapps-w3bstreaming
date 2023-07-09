@@ -39,11 +39,9 @@ io.on('connection', socket => {
   socket.on('broadcast', (id: string, msg: IBroadcastMsg) => {
     connections.set(id, socket);
     streams.set(msg.streamId, id);
-    console.log('BROADCASTING');
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
-    console.log(`WATCH ADDRESS ${id}`);
     if (!streams.has(msg.streamId)) {
       return socket.emit('error', {
         message: `Stream with id ${msg.streamId} hasn't started yet`,
@@ -51,8 +49,6 @@ io.on('connection', socket => {
     }
 
     if (!isValidSig(id, msg.signedMsg)) {
-      console.log(id);
-      console.log(msg.signedMsg);
       return socket.emit('error', { message: `Signature isn't valid` });
     }
 
@@ -61,8 +57,6 @@ io.on('connection', socket => {
         message: `You aren't subscribed to stream with id ${msg.streamId}`,
       });
     }
-
-    console.log(`WATCH ADDRESS SUCCESS ${id}`);
 
     const broadcasterId = streams.get(msg.streamId) as string;
 
@@ -78,8 +72,6 @@ io.on('connection', socket => {
   });
 
   socket.on('offer', (id, msg: IOfferMsg) => {
-    console.log(id);
-    console.log(msg);
     if (connections.has(msg.userId)) {
       connections.get(msg.userId)!.emit('offer', id, msg);
     }
@@ -92,8 +84,8 @@ io.on('connection', socket => {
   });
 
   socket.on('candidate', (id, msg: ICandidateMsg) => {
-    if (connections.has(msg.id)) {
-      connections.get(msg.id)?.emit('candidate', id, msg);
+    if (connections.has(id)) {
+      connections.get(id)?.emit('candidate', msg.id, msg);
     }
   });
 

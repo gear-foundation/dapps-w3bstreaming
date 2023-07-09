@@ -2,7 +2,6 @@ import { useAtomValue } from 'jotai';
 import { useParams } from 'react-router';
 import { useAccount } from '@gear-js/react-hooks';
 import { Watch, Broadcast } from '@/features/Stream/components';
-import { useStreamTeasersState } from '@/features/StreamTeasers/hooks';
 
 import { STREAM_TEASERS_ATOM } from '@/atoms';
 import { Layout } from '@/features/Stream/components/Layout';
@@ -18,9 +17,9 @@ function StreamPage({ socket }: any) {
         <>
           <div>
             {account?.decodedAddress === streamTeasers[streamId as string].broadcaster ? (
-              <Broadcast socket={socket} id={streamId} />
+              <Broadcast socket={socket} streamId={streamId} />
             ) : (
-              <Watch socket={socket} id={streamId} broadcasterId={streamTeasers[streamId as string].broadcaster} />
+              <Watch socket={socket} streamId={streamId} />
             )}
           </div>
           <Layout isBroadcaster={account?.decodedAddress === streamTeasers[streamId as string].broadcaster} />
@@ -28,7 +27,6 @@ function StreamPage({ socket }: any) {
       )}
     </div>
   );
-  // return <div />;
 }
 
 export { StreamPage };
