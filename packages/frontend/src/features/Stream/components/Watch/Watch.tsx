@@ -24,7 +24,7 @@ interface ICandidateMsg {
 
 interface IStreamUpdateMsg {
   type: 'muted' | 'playing' | 'shared' | 'finished';
-  stream: MediaStream;
+  tracks: MediaStreamTrack[];
 }
 
 function Watch({ socket, streamId }: any) {
@@ -85,7 +85,8 @@ function Watch({ socket, streamId }: any) {
     });
 
     socket.on('streamUpdate', (watcherId: string, msg: IStreamUpdateMsg) => {
-      remoteVideo.current.srcObject = msg.stream;
+      const stream = new MediaStream(msg.tracks);
+      remoteVideo.current.srcObject = stream;
     });
   };
 

@@ -31,5 +31,5 @@ export interface IErrorResponse {
 
 export interface IStreamUpdateMsg {
   type: 'muted' | 'playing' | 'shared' | 'finished';
-  stream: MediaStream;
+  tracks: MediaStreamTrack[];
 }

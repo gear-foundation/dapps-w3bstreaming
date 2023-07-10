@@ -99,7 +99,7 @@ function Broadcast({ socket, streamId }: any) {
 
       socket.emit('streamUpdate', account?.address, {
         type: 'muted',
-        stream: localStream,
+        tracks: localStream.getTracks(),
       });
     }
   };
