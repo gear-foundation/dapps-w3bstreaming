@@ -3,4 +3,4 @@ export interface SectionProps {
   children: JSX.Element | JSX.Element[];
 }
 
-export type StreamState = 'loading' | 'success' | 'not-subscribed' | 'not-started';
+export type StreamState = 'initialized' | 'loading' | 'success' | 'not-subscribed' | 'not-started';

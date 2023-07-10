@@ -33,9 +33,10 @@ function Watch({ socket, streamId }: any) {
   let peerConnection: RTCPeerConnection | null = null;
   const { account } = useAccount();
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
-  const [streamStatus, setStreamStatus] = useState<StreamState>('loading');
+  const [streamStatus, setStreamStatus] = useState<StreamState>('initialized');
 
   const handlePlayStream = () => {
+    setStreamStatus('loading');
     socket.emit('watch', account?.address, {
       streamId,
       signedMsg: publicKey?.signature,
@@ -117,11 +118,16 @@ function Watch({ socket, streamId }: any) {
   return (
     <div className={cx(styles.layout)}>
       <Player onReady={handlePlayerReady} mode="watch" />
-
-      <div className={cx(styles['broadcast-not-available'])}>
-        <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
-      </div>
-
+      {streamStatus === 'initialized' && (
+        <div className={cx(styles['broadcast-not-available'])}>
+          <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
+        </div>
+      )}
+      {streamStatus === 'loading' && (
+        <div className={cx(styles['broadcast-not-available'])}>
+          <Loader />
+        </div>
+      )}
       {streamStatus === 'not-subscribed' && (
         <div className={cx(styles['broadcast-not-available'])}>
           <h3>Broadcast not available</h3>

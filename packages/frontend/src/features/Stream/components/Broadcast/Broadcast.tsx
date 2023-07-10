@@ -84,16 +84,16 @@ function Broadcast({ socket, streamId }: any) {
   const handleMuteSound = (isMuted: boolean) => {
     if (localStream) {
       if (isMuted) {
-        localStream.getAudioTracks().forEach((track) => ({
-          ...track,
-          enabled: true,
-        }));
+        localStream.getAudioTracks().forEach((track) => {
+          // eslint-disable-next-line no-param-reassign
+          track.enabled = true;
+        });
         setIsSoundMuted(false);
       } else {
-        localStream.getAudioTracks().forEach((track) => ({
-          ...track,
-          enabled: false,
-        }));
+        localStream.getAudioTracks().forEach((track) => {
+          // eslint-disable-next-line no-param-reassign
+          track.enabled = false;
+        });
         setIsSoundMuted(true);
       }
 
