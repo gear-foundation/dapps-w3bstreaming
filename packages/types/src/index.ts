@@ -28,3 +28,8 @@ export interface ICandidateMsg {
 export interface IErrorResponse {
   message: string;
 }
+
+export interface IStreamUpdateMsg {
+  type: 'muted' | 'playing' | 'shared' | 'finished';
+  stream: MediaStream;
+}

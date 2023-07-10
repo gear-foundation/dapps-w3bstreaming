@@ -2,21 +2,19 @@
 @use '~styles/mixins' as *;
 
 .layout {
-    width: 1200px;
-    height: 760px;
-}
-
-.player-container {
     position: relative;
-}
-
-.player {
     width: 1200px;
     height: 760px;
 }
 
-.player-controls {
-    height: 80px;
+.start-stream-curtain {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: #00000033;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: theme-var($background-secondary);
 }

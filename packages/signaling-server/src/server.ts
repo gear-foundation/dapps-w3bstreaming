@@ -12,6 +12,7 @@ import {
   IOfferMsg,
   IStopBroadcastingMsg,
   IWatchMsg,
+  IStreamUpdateMsg,
 } from 'types';
 
 const app = express();
@@ -86,6 +87,16 @@ io.on('connection', socket => {
   socket.on('candidate', (id, msg: ICandidateMsg) => {
     if (connections.has(id)) {
       connections.get(id)?.emit('candidate', msg.id, msg);
+    }
+  });
+
+  socket.on('streamUpdate', (broadcasterId, msg: IStreamUpdateMsg) => {
+    if (connections.has(broadcasterId)) {
+      for (let connection of connections.keys()) {
+        if (connection !== broadcasterId) {
+          connections.get(connection)?.emit('streamUpdate', connection, msg);
+        }
+      }
     }
   });
 

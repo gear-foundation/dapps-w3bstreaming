@@ -9,6 +9,7 @@ import { StreamState } from './Watch.interface';
 import { Player } from '../Player';
 import { Loader } from '@/components';
 import { RTC_CONFIG } from '../../config';
+import { Button } from '@/ui';
 
 interface IOfferMsg {
   userId: string;
@@ -21,6 +22,11 @@ interface ICandidateMsg {
   candidate: RTCIceCandidate;
 }
 
+interface IStreamUpdateMsg {
+  type: 'muted' | 'playing' | 'shared' | 'finished';
+  stream: MediaStream;
+}
+
 function Watch({ socket, streamId }: any) {
   const remoteVideo: MutableRefObject<any> = useRef(null);
   const [localStream, setLocalStream] = useState<HTMLAudioElement | null>(null);
@@ -29,7 +35,7 @@ function Watch({ socket, streamId }: any) {
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
   const [streamStatus, setStreamStatus] = useState<StreamState>('loading');
 
-  const onStart = () => {
+  const handlePlayStream = () => {
     socket.emit('watch', account?.address, {
       streamId,
       signedMsg: publicKey?.signature,
@@ -46,6 +52,8 @@ function Watch({ socket, streamId }: any) {
             watcherId: account?.address,
             description: peerConnection?.currentLocalDescription,
           });
+
+          setStreamStatus('success');
         });
 
       peerConnection!.ontrack = (event: any) => {
@@ -74,6 +82,10 @@ function Watch({ socket, streamId }: any) {
     socket.on('candidate', (_: string, msg: ICandidateMsg) => {
       peerConnection?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
     });
+
+    socket.on('streamUpdate', (watcherId: string, msg: IStreamUpdateMsg) => {
+      remoteVideo.current.srcObject = msg.stream;
+    });
   };
 
   useEffect(() => {
@@ -82,8 +94,6 @@ function Watch({ socket, streamId }: any) {
       remoteVideo.current.play();
     }
   }, [localStream]);
-
-  useEffect(() => () => socket.emit('disconnect'), [socket]);
 
   useEffect(() => {
     if (account?.address && !publicKey) {
@@ -100,8 +110,18 @@ function Watch({ socket, streamId }: any) {
     }
   }, [account, account?.address, publicKey]);
 
+  const handlePlayerReady = (player: HTMLVideoElement) => {
+    remoteVideo.current = player;
+  };
+
   return (
     <div className={cx(styles.layout)}>
+      <Player onReady={handlePlayerReady} mode="watch" />
+
+      <div className={cx(styles['broadcast-not-available'])}>
+        <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
+      </div>
+
       {streamStatus === 'not-subscribed' && (
         <div className={cx(styles['broadcast-not-available'])}>
           <h3>Broadcast not available</h3>
@@ -113,16 +133,6 @@ function Watch({ socket, streamId }: any) {
           <h3>Stream in not started yet</h3>
         </div>
       )}
-      <button onClick={onStart}>Start</button>
-      <video
-        className={cx(styles.player)}
-        controls
-        preload="auto"
-        // poster="//vjs.zencdn.net/v/oceans.png"
-        ref={remoteVideo}
-        id="video">
-        <track kind="captions" src="captions.vtt" label="English" />
-      </video>
     </div>
   );
 }
