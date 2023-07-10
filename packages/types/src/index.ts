@@ -30,6 +30,9 @@ export interface IErrorResponse {
 }
 
 export interface IStreamUpdateMsg {
-  type: 'muted' | 'playing' | 'shared' | 'finished';
-  tracks: MediaStreamTrack[];
+  type: 'muted' | 'playing' | 'sharing' | 'finished';
+}
+
+export interface ISharingMsg {
+  watcherId: string;
 }

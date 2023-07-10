@@ -49,6 +49,7 @@ function Player({
         controls={false}
         preload="auto"
         // poster="//vjs.zencdn.net/v/oceans.png"
+        muted={mode === 'broadcast'}
         ref={playerRef}
         id="audio"
         autoPlay>

@@ -13,6 +13,7 @@ import {
   IStopBroadcastingMsg,
   IWatchMsg,
   IStreamUpdateMsg,
+  ISharingMsg,
 } from 'types';
 
 const app = express();
@@ -91,12 +92,17 @@ io.on('connection', socket => {
   });
 
   socket.on('streamUpdate', (broadcasterId, msg: IStreamUpdateMsg) => {
-    if (connections.has(broadcasterId)) {
-      for (let connection of connections.keys()) {
-        if (connection !== broadcasterId) {
-          connections.get(connection)?.emit('streamUpdate', connection, msg);
-        }
+    console.log(broadcasterId);
+    for (let connection of connections.keys()) {
+      if (connection !== broadcasterId) {
+        connections.get(connection)?.emit('streamUpdate', broadcasterId, msg);
       }
+    }
+  });
+
+  socket.on('sharing', (broadcasterId, msg: ISharingMsg) => {
+    if (connections.has(broadcasterId)) {
+      connections.get(broadcasterId)?.emit('sharing', broadcasterId, msg);
     }
   });
 

@@ -23,14 +23,14 @@ interface ICandidateMsg {
 }
 
 interface IStreamUpdateMsg {
-  type: 'muted' | 'playing' | 'shared' | 'finished';
+  type: 'muted' | 'playing' | 'sharing' | 'finished';
   tracks: MediaStreamTrack[];
 }
 
 function Watch({ socket, streamId }: any) {
-  const remoteVideo: MutableRefObject<any> = useRef(null);
-  const [localStream, setLocalStream] = useState<HTMLAudioElement | null>(null);
-  let peerConnection: RTCPeerConnection | null = null;
+  const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
   const [streamStatus, setStreamStatus] = useState<StreamState>('initialized');
@@ -42,32 +42,58 @@ function Watch({ socket, streamId }: any) {
       signedMsg: publicKey?.signature,
     });
 
+    peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
+
     socket.on('offer', (broadcasterAddress: string, msg: IOfferMsg) => {
-      peerConnection = new RTCPeerConnection(RTC_CONFIG);
-      peerConnection
+      peerConnection.current
         ?.setRemoteDescription(msg.description)
-        .then(() => peerConnection?.createAnswer())
-        .then((answer: any) => peerConnection?.setLocalDescription(answer))
+        .then(() => peerConnection.current?.createAnswer())
+        .then((answer: any) => peerConnection.current?.setLocalDescription(answer))
         .then(() => {
           socket.emit('answer', broadcasterAddress, {
             watcherId: account?.address,
-            description: peerConnection?.currentLocalDescription,
+            description: peerConnection.current?.localDescription,
           });
 
           setStreamStatus('success');
         });
 
-      peerConnection!.ontrack = (event: any) => {
-        setLocalStream(event.streams[0]);
-      };
-
-      peerConnection!.onicecandidate = (event: any) => {
+      peerConnection.current!.onicecandidate = (event: any) => {
         if (event.candidate) {
           socket.emit('candidate', broadcasterAddress, {
             candidate: event.candidate,
             id: account?.address,
           });
         }
+      };
+
+      peerConnection.current!.ontrack = (event: RTCTrackEvent) => {
+        console.log('FIRED');
+        if (event.streams[0]) {
+          console.log('OKI');
+          setLocalStream(event.streams[0]);
+        } else {
+          console.log('NO');
+          const newStream = new MediaStream([event.track]);
+
+          setLocalStream(newStream);
+        }
+      };
+
+      peerConnection.current!.onnegotiationneeded = () => {
+        console.log('FFFFF');
+        peerConnection.current!.setRemoteDescription(msg.description);
+        peerConnection
+          .current!.createAnswer()
+          .then((answer) => {
+            peerConnection.current!.setLocalDescription(answer);
+          })
+          .then(() => {
+            socket.emit('answer', broadcasterAddress, {
+              watcherId: account?.address,
+              description: peerConnection.current?.currentLocalDescription,
+            });
+          });
       };
     });
 
@@ -81,12 +107,16 @@ function Watch({ socket, streamId }: any) {
     });
 
     socket.on('candidate', (_: string, msg: ICandidateMsg) => {
-      peerConnection?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
+      console.log(msg.candidate);
+      peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
     });
 
-    socket.on('streamUpdate', (watcherId: string, msg: IStreamUpdateMsg) => {
-      const stream = new MediaStream(msg.tracks);
-      remoteVideo.current.srcObject = stream;
+    socket.on('streamUpdate', (broadcasterId: string, msg: IStreamUpdateMsg) => {
+      if (msg.type === 'sharing') {
+        socket.emit('sharing', broadcasterId, {
+          watcherId: account?.address,
+        });
+      }
     });
   };
 

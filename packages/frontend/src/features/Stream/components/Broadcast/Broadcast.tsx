@@ -22,63 +22,70 @@ interface ICandidateMsg {
   id: string;
   candidate: RTCIceCandidate;
 }
+
+interface ISharingMsg {
+  watcherId: string;
+}
+
 function Broadcast({ socket, streamId }: any) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  let peerConnection: RTCPeerConnection | null = null;
-  const conns: Record<string, RTCPeerConnection> = {};
+  const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
+  const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
 
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(true);
   const [isSharingScreen, setIsSharingScreen] = useState<boolean>(false);
 
   const { account } = useAccount();
+  console.log(account?.address);
+  const handleScreenShare = () => {
+    const currentVoiceTracks = localStream?.getAudioTracks();
+    currentVoiceTracks?.forEach((t) => t.stop());
 
-  const handleScreenShare = (isSharing: boolean) => {
-    if (isSharing) {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => ({
-          video: devices.some((device) => device.kind === 'videoinput'),
-          audio: devices.some((device) => device.kind === 'audioinput'),
-        }))
-        .then((constrains) =>
-          navigator.mediaDevices.getUserMedia(constrains).then((s) => {
-            setLocalStream(s);
-          }),
-        );
-      setIsSharingScreen(false);
-    } else {
-      navigator.mediaDevices
-        .getDisplayMedia({
-          video: true,
-          audio: true,
-        })
-        .then((screenStream) => {
-          if (localStream) {
-            const combinedStream = new MediaStream([
-              ...screenStream.getVideoTracks(),
-              ...localStream!.getAudioTracks(),
-            ]);
+    navigator.mediaDevices
+      .getDisplayMedia({ audio: true, video: true })
+      .then((s) => {
+        setLocalStream(s);
+        return s;
+      })
+      .then((s) => {
+        socket.on('sharing', (broadcasterId: string, msg: ISharingMsg) => {
+          const videoTracks = s.getVideoTracks();
+          const audioTracks = s.getAudioTracks();
+          console.log(videoTracks[0]);
+          // peerConnection.current?.getTransceivers().forEach((transceiver) => {
+          //   transceiver.sender.replaceTrack(audioTracks[0]);
+          // });
+          peerConnection.current!.addTrack(videoTracks[0]);
 
-            socket.emit('streamUpdate', account?.address, {
-              type: 'sharing',
-              stream: combinedStream,
-            });
+          peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+            if (event.candidate) {
+              socket.emit('candidate', msg.watcherId, { id: broadcasterId, candidate: event.candidate });
+            }
+          };
 
-            setLocalStream(combinedStream);
-          } else {
-            socket.emit('streamUpdate', account?.address, {
-              type: 'sharing',
-              stream: screenStream,
-            });
+          peerConnection.current!.onnegotiationneeded = (ev: Event) => {
+            console.log('FFFFFFFFF');
+            console.log(ev);
 
-            setLocalStream(screenStream);
-          }
-
-          setIsSharingScreen(true);
+            peerConnection
+              .current!.createOffer()
+              .then((offer) => peerConnection.current!.setLocalDescription(offer))
+              .then(() =>
+                socket.emit('offer', account?.address, {
+                  description: peerConnection.current?.localDescription,
+                  userId: msg.watcherId,
+                  streamId,
+                }),
+              );
+          };
         });
-    }
+
+        socket.emit('streamUpdate', account?.address, {
+          type: 'sharing',
+        });
+      });
   };
 
   const handleMuteSound = (isMuted: boolean) => {
@@ -104,28 +111,52 @@ function Broadcast({ socket, streamId }: any) {
     }
   };
 
-  const handlePlayVideo = (isPlaying: boolean) => {
-    if (localStream) {
-      if (isPlaying) {
-        localStream.getVideoTracks().forEach((track) => ({
-          ...track,
-          enabled: true,
-        }));
-        setIsVideoPlaying(false);
-      } else {
-        localStream.getVideoTracks().forEach((track) => ({
-          ...track,
-          enabled: false,
-        }));
-        setIsVideoPlaying(true);
-      }
+  // const handleShareCamera = (isPlaying: boolean) => {
+  //   if (localStream) {
+  //     if (!isPlaying) {
+  //       navigator.mediaDevices
+  //         .enumerateDevices()
+  //         .then((devices) => ({
+  //           video: devices.some((device) => device.kind === 'videoinput'),
+  //           audio: devices.some((device) => device.kind === 'audioinput'),
+  //         }))
+  //         .then((constrains) =>
+  //           navigator.mediaDevices
+  //             .getUserMedia(constrains)
+  //             .then((s) => {
+  //               setLocalStream(s);
+  //               return s;
+  //             })
+  //             .then((s) => {
+  //               peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
 
-      socket.emit('streamUpdate', account?.address, {
-        type: 'playing',
-        stream: localStream,
-      });
-    }
-  };
+  //               Object.keys(conns).forEach((connection) => {
+  //                 conns.current[connection] = peerConnection.current as RTCPeerConnection;
+
+  //                 s.getTracks().forEach((t) => peerConnection.current?.addTrack(t, s));
+
+  //                 conns.current[connection].onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+  //                   if (event.candidate) {
+  //                     socket.emit('candidate', connection, { id: account?.address, candidate: event.candidate });
+  //                   }
+  //                 };
+
+  //                 conns.current[connection]
+  //                   .createOffer()
+  //                   .then((offer) => peerConnection.current?.setLocalDescription(offer))
+  //                   .then(() =>
+  //                     socket.emit('offer', account?.address, {
+  //                       description: peerConnection.current?.localDescription,
+  //                       userId: connection,
+  //                       streamId,
+  //                     }),
+  //                   );
+  //               });
+  //             }),
+  //         );
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (localStream) {
@@ -165,21 +196,22 @@ function Broadcast({ socket, streamId }: any) {
             socket.emit('broadcast', account?.address, { streamId });
 
             socket.on('watch', (idOfWatcher: string, msg: IWatchMsg) => {
-              peerConnection = new RTCPeerConnection(RTC_CONFIG);
-              conns[idOfWatcher] = peerConnection;
-              s.getTracks().forEach((t) => peerConnection?.addTrack(t, s));
-              peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+              peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
+              conns.current[idOfWatcher] = peerConnection.current;
+              s.getTracks().forEach((t) => peerConnection.current?.addTrack(t, s));
+
+              peerConnection.current.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
                 if (event.candidate) {
                   socket.emit('candidate', idOfWatcher, { id: account.address, candidate: event.candidate });
                 }
               };
 
-              peerConnection
+              peerConnection.current
                 .createOffer()
-                .then((offer) => peerConnection?.setLocalDescription(offer))
+                .then((offer) => peerConnection.current?.setLocalDescription(offer))
                 .then(() =>
                   socket.emit('offer', account?.address, {
-                    description: peerConnection?.localDescription,
+                    description: peerConnection.current?.localDescription,
                     userId: idOfWatcher,
                     streamId: msg.streamId,
                   }),
@@ -197,11 +229,15 @@ function Broadcast({ socket, streamId }: any) {
       });
 
     socket.on('candidate', (idOfWatcher: string, msg: ICandidateMsg) => {
-      conns[idOfWatcher]?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
+      conns.current[idOfWatcher]
+        ?.addIceCandidate(new RTCIceCandidate(msg.candidate))
+        .catch((e: any) => console.error(e));
     });
 
     socket.on('answer', (_: string, msg: IAnswerMsg) => {
-      conns[msg.watcherId]?.setRemoteDescription(msg.description);
+      console.log('ANSWER');
+      console.log(msg.description);
+      conns.current[msg.watcherId]?.setRemoteDescription(msg.description);
     });
   };
 
@@ -231,7 +267,7 @@ function Broadcast({ socket, streamId }: any) {
         isMuted={isSoundMuted}
         onSoundMute={handleMuteSound}
         isVideoPlaying={isVideoPlaying}
-        onVideoPlaying={handlePlayVideo}
+        // onVideoPlaying={handleShareCamera}
         onStopStream={handleStopStream}
         isSharingScreen={isSharingScreen}
         onShareScreen={handleScreenShare}
