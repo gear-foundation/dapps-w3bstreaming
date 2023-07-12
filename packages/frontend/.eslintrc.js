@@ -28,6 +28,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/button-has-type': 'off',
     'spaced-comment': 'off',
+    'react/jsx-no-useless-fragment': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',

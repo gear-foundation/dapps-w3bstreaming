@@ -31,6 +31,12 @@
 
 .tabs {
     padding-bottom: 20px;
+
+    @include lg {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
 }
 
 .content {

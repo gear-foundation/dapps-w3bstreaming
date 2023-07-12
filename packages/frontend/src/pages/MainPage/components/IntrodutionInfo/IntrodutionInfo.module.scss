@@ -6,6 +6,10 @@
     min-height: 695px;
     background: theme-var($background-secondary);
 
+    @include lg {
+        padding: 0 20px;
+      }
+
     @include wings;
 }
 
