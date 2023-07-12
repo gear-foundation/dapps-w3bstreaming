@@ -26,6 +26,7 @@ function Player({
   onShareScreen,
 }: PlayerProps) {
   const playerRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const prevVolume: MutableRefObject<number> = useRef(0);
   const [isOnPause, setIsOnPause] = useState<boolean>(false);
   const [volume, setVolume] = useState(50);
 
@@ -54,6 +55,15 @@ function Player({
     setVolume(Number(volumePercent));
   };
 
+  const handleMuteVolume = () => {
+    if (volume) {
+      prevVolume.current = volume;
+      setVolume(() => 0);
+    } else {
+      setVolume(() => prevVolume.current);
+    }
+  };
+
   const handleFullScreen = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
@@ -78,8 +88,8 @@ function Player({
       <div className={cx(styles.controls)}>
         <div className={cx(styles.left, styles.part)}>
           <div className={cx(styles.volume)}>
-            <Button variant="icon" label="" icon={VolumeSVG} />
-            <input type="range" min="0" max="100" onChange={handleVolumeChange} />
+            <Button variant="icon" label="" icon={VolumeSVG} onClick={handleMuteVolume} />
+            <input type="range" min="0" max="100" onChange={handleVolumeChange} value={volume} />
           </div>
         </div>
         <div className={cx(styles.center, styles.part)}>
