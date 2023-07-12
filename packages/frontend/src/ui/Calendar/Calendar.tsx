@@ -88,7 +88,13 @@ function Calendar({ onChange }: CalendarProps) {
 
   const handleWeekDayClassname = () => cx(styles['calendar-week-day']);
 
-  const handleDisableTiles = (date: Date): boolean => date.getTime() >= new Date().getTime();
+  const handleDisableTiles = (date: Date): boolean => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    return date.getTime() >= now.getTime();
+  };
 
   return (
     <div className={cx(styles['calendar-container'])}>
