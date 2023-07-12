@@ -32,6 +32,11 @@ const io = new Server(server, {
 
 const connections = new Map<string, Socket>();
 const streams = new Map<string, string>();
+const connectionsPerStream = new Map<
+  string,
+  { count: number; broadcasterId: string }
+>();
+
 io.sockets.on('error', err => {
   console.error(err);
 });
@@ -41,14 +46,10 @@ io.on('connection', socket => {
     connections.set(id, socket);
     streams.set(msg.streamId, id);
 
-    for (let connection of connections.keys()) {
-      if (connection !== id) {
-        connections.get(connection)!.emit('broadcast', id, {
-          ...msg,
-          userId: connection,
-        });
-      }
+    if (!connectionsPerStream.has(msg.streamId)) {
+      connectionsPerStream.set(msg.streamId, { count: 0, broadcasterId: '' });
     }
+    connectionsPerStream.get(msg.streamId)!.broadcasterId = id;
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
@@ -73,6 +74,18 @@ io.on('connection', socket => {
     connections.get(broadcasterId)?.emit('watch', id, msg);
 
     connections.set(id, socket);
+
+    connectionsPerStream.get(msg.streamId)!.count++;
+
+    connections
+      .get(connectionsPerStream.get(msg.streamId)!.broadcasterId)!
+      .emit('viewersCount', connectionsPerStream.get(msg.streamId)!.count);
+
+    for (let connection of connections.keys()) {
+      connections
+        .get(connection)!
+        .emit('viewersCount', connectionsPerStream.get(msg.streamId)!.count);
+    }
   });
 
   socket.on('stopBroadcasting', (_, msg: IStopBroadcastingMsg) => {
@@ -108,6 +121,11 @@ io.on('connection', socket => {
         });
       }
     }
+  });
+
+  socket.on('stopWatching', (id, msg) => {
+    connectionsPerStream.get(msg.streamId)!.count--;
+    connections.delete(id);
   });
 
   socket.on('disconnect', r => {

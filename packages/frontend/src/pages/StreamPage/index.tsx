@@ -12,18 +12,24 @@ function StreamPage() {
   const { id: streamId } = useParams();
   const streamTeasers = useAtomValue(STREAM_TEASERS_ATOM);
 
+  const streamTeaser = streamTeasers?.[streamId as string];
+
   return (
     <div>
-      {streamTeasers?.[streamId as string] && (
+      {streamTeaser && (
         <>
           <div>
-            {account?.decodedAddress === streamTeasers[streamId as string].broadcaster ? (
+            {account?.decodedAddress === streamTeaser.broadcaster ? (
               <Broadcast socket={socket} streamId={streamId as string} />
             ) : (
               <Watch socket={socket} streamId={streamId as string} />
             )}
           </div>
-          <Layout isBroadcaster={account?.decodedAddress === streamTeasers[streamId as string].broadcaster} />
+          <Layout
+            isBroadcaster={account?.decodedAddress === streamTeaser.broadcaster}
+            title={streamTeaser.title}
+            description={streamTeaser.description}
+          />
         </>
       )}
     </div>
