@@ -1,41 +1,32 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './Watch.module.scss';
 import { cx } from '@/utils';
-import { StreamState } from './Watch.interface';
+import { CandidateMsg, ErrorMsg, OfferMsg, StreamState, WatchProps } from './Watch.interface';
 import { Player } from '../Player';
 import { Loader } from '@/components';
 import { RTC_CONFIG } from '../../config';
 import { Button } from '@/ui';
+import { MediaStreamSequence } from '../../utils';
 
-interface IOfferMsg {
-  userId: string;
-  description: RTCSessionDescription;
-  streamId: string;
-}
-
-interface ICandidateMsg {
-  id: string;
-  candidate: RTCIceCandidate;
-}
-
-interface IStreamUpdateMsg {
-  type: 'muted' | 'playing' | 'sharing' | 'finished';
-  tracks: MediaStreamTrack[];
-}
-
-function Watch({ socket, streamId }: any) {
+function Watch({ socket, streamId }: WatchProps) {
   const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
-  const [streamStatus, setStreamStatus] = useState<StreamState>('initialized');
+  const [streamStatus, setStreamStatus] = useState<StreamState>('ready-to-play');
+  const mediaTrackSequence: MutableRefObject<MediaStreamSequence | null> = useRef(null);
+  const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
 
-  const handlePlayStream = () => {
+  const handlePlayStream = useCallback(() => {
+    if (!account?.address || !publicKey?.signature || !streamId) {
+      return;
+    }
+
     setStreamStatus('loading');
     socket.emit('watch', account?.address, {
       streamId,
@@ -44,7 +35,8 @@ function Watch({ socket, streamId }: any) {
 
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
 
-    socket.on('offer', (broadcasterAddress: string, msg: IOfferMsg) => {
+    socket.on('offer', (broadcasterAddress: string, msg: OfferMsg) => {
+      mediaTrackSequence.current = msg.mediaSequence;
       peerConnection.current
         ?.setRemoteDescription(msg.description)
         .then(() => peerConnection.current?.createAnswer())
@@ -54,11 +46,10 @@ function Watch({ socket, streamId }: any) {
             watcherId: account?.address,
             description: peerConnection.current?.localDescription,
           });
-
-          setStreamStatus('success');
+          setLocalStream(null);
         });
 
-      peerConnection.current!.onicecandidate = (event: any) => {
+      peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate) {
           socket.emit('candidate', broadcasterAddress, {
             candidate: event.candidate,
@@ -68,20 +59,14 @@ function Watch({ socket, streamId }: any) {
       };
 
       peerConnection.current!.ontrack = (event: RTCTrackEvent) => {
-        console.log('FIRED');
         if (event.streams[0]) {
-          console.log('OKI');
-          setLocalStream(event.streams[0]);
+          setLocalStream(() => event.streams[0]);
         } else {
-          console.log('NO');
-          const newStream = new MediaStream([event.track]);
-
-          setLocalStream(newStream);
+          setLocalStream((prev) => new MediaStream([...(prev ? prev!.getTracks() : []), event.track]));
         }
       };
 
       peerConnection.current!.onnegotiationneeded = () => {
-        console.log('FFFFF');
         peerConnection.current!.setRemoteDescription(msg.description);
         peerConnection
           .current!.createAnswer()
@@ -91,13 +76,13 @@ function Watch({ socket, streamId }: any) {
           .then(() => {
             socket.emit('answer', broadcasterAddress, {
               watcherId: account?.address,
-              description: peerConnection.current?.currentLocalDescription,
+              description: peerConnection.current?.localDescription,
             });
           });
       };
     });
 
-    socket.on('error', ({ message }: any) => {
+    socket.on('error', ({ message }: ErrorMsg) => {
       if (message === `Stream with id ${streamId} hasn't started yet`) {
         setStreamStatus('not-started');
       }
@@ -106,24 +91,19 @@ function Watch({ socket, streamId }: any) {
       }
     });
 
-    socket.on('candidate', (_: string, msg: ICandidateMsg) => {
-      console.log(msg.candidate);
-      peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((e: any) => console.error(e));
+    socket.on('candidate', (_: string, msg: CandidateMsg) => {
+      peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
     });
-
-    socket.on('streamUpdate', (broadcasterId: string, msg: IStreamUpdateMsg) => {
-      if (msg.type === 'sharing') {
-        socket.emit('sharing', broadcasterId, {
-          watcherId: account?.address,
-        });
-      }
-    });
-  };
+  }, [account?.address, publicKey?.signature, socket, streamId]);
 
   useEffect(() => {
     if (remoteVideo.current && localStream) {
+      setStreamStatus('streaming');
       remoteVideo.current.srcObject = localStream;
-      remoteVideo.current.play();
+      remoteVideo.current
+        .play()
+        .then((s) => s)
+        .catch((err) => console.log(err));
     }
   }, [localStream]);
 
@@ -142,6 +122,25 @@ function Watch({ socket, streamId }: any) {
     }
   }, [account, account?.address, publicKey]);
 
+  useEffect(() => {
+    if (streamStatus === 'not-started') {
+      if (account?.address && publicKey?.signature && !retryIntervalId.current) {
+        retryIntervalId.current = setInterval(() => {
+          socket.emit('watch', account?.address, {
+            streamId,
+            signedMsg: publicKey?.signature,
+          });
+        }, 2000);
+      }
+    }
+
+    if (streamStatus !== 'not-started') {
+      if (retryIntervalId.current) {
+        clearInterval(retryIntervalId.current);
+      }
+    }
+  }, [streamStatus, account?.address, publicKey?.signature, streamId, socket]);
+
   const handlePlayerReady = (player: HTMLVideoElement) => {
     remoteVideo.current = player;
   };
@@ -149,14 +148,14 @@ function Watch({ socket, streamId }: any) {
   return (
     <div className={cx(styles.layout)}>
       <Player onReady={handlePlayerReady} mode="watch" />
-      {streamStatus === 'initialized' && (
-        <div className={cx(styles['broadcast-not-available'])}>
-          <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
-        </div>
-      )}
       {streamStatus === 'loading' && (
         <div className={cx(styles['broadcast-not-available'])}>
           <Loader />
+        </div>
+      )}
+      {streamStatus === 'ready-to-play' && (
+        <div className={cx(styles['broadcast-not-available'])}>
+          <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
         </div>
       )}
       {streamStatus === 'not-subscribed' && (

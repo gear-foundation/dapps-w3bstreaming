@@ -5,8 +5,9 @@ import { Watch, Broadcast } from '@/features/Stream/components';
 
 import { STREAM_TEASERS_ATOM } from '@/atoms';
 import { Layout } from '@/features/Stream/components/Layout';
+import { socket } from '@/utils';
 
-function StreamPage({ socket }: any) {
+function StreamPage() {
   const { account } = useAccount();
   const { id: streamId } = useParams();
   const streamTeasers = useAtomValue(STREAM_TEASERS_ATOM);
@@ -17,9 +18,9 @@ function StreamPage({ socket }: any) {
         <>
           <div>
             {account?.decodedAddress === streamTeasers[streamId as string].broadcaster ? (
-              <Broadcast socket={socket} streamId={streamId} />
+              <Broadcast socket={socket} streamId={streamId as string} />
             ) : (
-              <Watch socket={socket} streamId={streamId} />
+              <Watch socket={socket} streamId={streamId as string} />
             )}
           </div>
           <Layout isBroadcaster={account?.decodedAddress === streamTeasers[streamId as string].broadcaster} />

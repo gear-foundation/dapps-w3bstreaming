@@ -3,8 +3,8 @@ export interface PlayerProps {
   mode: 'broadcast' | 'watch';
   isMuted?: boolean;
   onSoundMute?: (isMuted: boolean) => void;
-  isVideoPlaying?: boolean;
-  onVideoPlaying?: (isPlaying: boolean) => void;
+  isCameraBlocked?: boolean;
+  onCameraBlock?: (isBlocked: boolean) => void;
   onStopStream?: () => void;
   isSharingScreen?: boolean;
   onShareScreen?: (isSharingScreen: boolean) => void;

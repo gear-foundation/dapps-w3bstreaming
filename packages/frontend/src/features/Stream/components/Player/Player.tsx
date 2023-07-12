@@ -19,8 +19,8 @@ function Player({
   onReady,
   isMuted = false,
   onSoundMute,
-  isVideoPlaying = false,
-  onVideoPlaying,
+  isCameraBlocked = false,
+  onCameraBlock,
   onStopStream,
   isSharingScreen = false,
   onShareScreen,
@@ -29,6 +29,7 @@ function Player({
   const [isOnPause, setIsOnPause] = useState<boolean>(false);
 
   useEffect(() => {
+    playerRef.current?.load();
     onReady?.(playerRef.current as HTMLVideoElement);
   }, [onReady]);
 
@@ -48,10 +49,10 @@ function Player({
         className={cx(styles.player)}
         controls={false}
         preload="auto"
-        // poster="//vjs.zencdn.net/v/oceans.png"
         muted={mode === 'broadcast'}
         ref={playerRef}
         id="audio"
+        playsInline
         autoPlay>
         <track kind="captions" src="captions.vtt" label="English" />
       </video>
@@ -84,8 +85,8 @@ function Player({
             <Button
               variant="icon"
               label=""
-              icon={isVideoPlaying ? CameraSVG : BLockedCameraSVG}
-              onClick={() => onVideoPlaying?.(isVideoPlaying)}
+              icon={isCameraBlocked ? BLockedCameraSVG : CameraSVG}
+              onClick={() => onCameraBlock?.(isCameraBlocked)}
             />
           )}
           {mode === 'broadcast' && <Button variant="icon" label="" icon={LeaveSVG} onClick={onStopStream} />}

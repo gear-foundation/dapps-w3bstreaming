@@ -12,8 +12,7 @@ import {
   IOfferMsg,
   IStopBroadcastingMsg,
   IWatchMsg,
-  IStreamUpdateMsg,
-  ISharingMsg,
+  IUpdateOffersMsg,
 } from 'types';
 
 const app = express();
@@ -41,15 +40,18 @@ io.on('connection', socket => {
   socket.on('broadcast', (id: string, msg: IBroadcastMsg) => {
     connections.set(id, socket);
     streams.set(msg.streamId, id);
+
+    for (let connection of connections.keys()) {
+      if (connection !== id) {
+        connections.get(connection)!.emit('broadcast', id, {
+          ...msg,
+          userId: connection,
+        });
+      }
+    }
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
-    if (!streams.has(msg.streamId)) {
-      return socket.emit('error', {
-        message: `Stream with id ${msg.streamId} hasn't started yet`,
-      });
-    }
-
     if (!isValidSig(id, msg.signedMsg)) {
       return socket.emit('error', { message: `Signature isn't valid` });
     }
@@ -60,9 +62,15 @@ io.on('connection', socket => {
       });
     }
 
+    if (!streams.has(msg.streamId)) {
+      return socket.emit('error', {
+        message: `Stream with id ${msg.streamId} hasn't started yet`,
+      });
+    }
+
     const broadcasterId = streams.get(msg.streamId) as string;
 
-    connections.get(broadcasterId)!.emit('watch', id, msg);
+    connections.get(broadcasterId)?.emit('watch', id, msg);
 
     connections.set(id, socket);
   });
@@ -91,18 +99,14 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('streamUpdate', (broadcasterId, msg: IStreamUpdateMsg) => {
-    console.log(broadcasterId);
+  socket.on('updateOffers', (broadcasterId, msg: IUpdateOffersMsg) => {
     for (let connection of connections.keys()) {
       if (connection !== broadcasterId) {
-        connections.get(connection)?.emit('streamUpdate', broadcasterId, msg);
+        connections.get(connection)!.emit('offer', broadcasterId, {
+          ...msg,
+          userId: connection,
+        });
       }
-    }
-  });
-
-  socket.on('sharing', (broadcasterId, msg: ISharingMsg) => {
-    if (connections.has(broadcasterId)) {
-      connections.get(broadcasterId)?.emit('sharing', broadcasterId, msg);
     }
   });
 
