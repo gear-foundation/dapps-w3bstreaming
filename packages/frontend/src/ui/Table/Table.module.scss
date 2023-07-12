@@ -62,6 +62,10 @@
     text-align: left;
     font-size: 14px;
     font-weight: 400;
+
+    @include lg {
+        min-width: 100px;
+      }
 } 
 
 .header-cell {
@@ -69,6 +73,10 @@
     max-width: 300px;
     display: flex;
     align-items: center;
+
+    @include lg {
+        min-width: 100px;
+      }
 }
 
 .empty-table {

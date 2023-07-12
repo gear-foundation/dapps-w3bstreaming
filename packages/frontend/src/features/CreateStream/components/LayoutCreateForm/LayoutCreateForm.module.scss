@@ -8,16 +8,31 @@
 .title {
     font-size: 40px;
     font-weight: 500;
+
+    @include xl {
+        text-align: center;
+    }
 }
 
 .content {
     padding-top: 32px;
     display: flex;
+
+    @include xl {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
 }
 
 .left {
     flex: 1;
     margin-right: 32px;
+
+    @include xl {
+        width: 90%;
+        margin: 0px;
+    }
 }
 
 .dropzone-wrapper {
