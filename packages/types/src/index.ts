@@ -15,6 +15,11 @@ export interface IOfferMsg {
   streamId: string;
 }
 
+export interface IUpdateOffersMsg {
+  description: RTCSessionDescription;
+  streamId: string;
+}
+
 export interface IAnswerMsg {
   watcherId: string;
   description: RTCSessionDescription;
@@ -27,9 +32,4 @@ export interface ICandidateMsg {
 
 export interface IErrorResponse {
   message: string;
-}
-
-export interface IStreamUpdateMsg {
-  type: 'muted' | 'playing' | 'shared' | 'finished';
-  tracks: MediaStreamTrack[];
 }

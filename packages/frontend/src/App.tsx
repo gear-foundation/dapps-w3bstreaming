@@ -17,9 +17,6 @@ function AppComponent() {
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
-  const address = process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001';
-
-  const socket: any = io(`${address}/`);
 
   return (
     <div className={cx(styles['app-container'])}>
@@ -56,7 +53,7 @@ function AppComponent() {
                 path={`/${STREAM}`}
                 element={
                   <ProtectedRoute>
-                    <StreamPage socket={socket} />
+                    <StreamPage />
                   </ProtectedRoute>
                 }
               />
