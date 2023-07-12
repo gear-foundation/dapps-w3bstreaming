@@ -13,6 +13,9 @@ import { HeaderProps } from './Header.interfaces';
 import { ADDRESS } from '@/consts';
 import { CONTRACT_ADDRESS_ATOM, STREAM_TEASERS_ATOM } from '@/atoms';
 import { useStreamTeasersState } from '@/features/StreamTeasers/hooks';
+import { useMediaQuery } from '@/hooks';
+import menuIcon from '@/assets/icons/burger-menu-icon.svg';
+import { BurgerMenu } from '../BurgerMenu/BurgerMenu';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
@@ -20,14 +23,26 @@ function Header({ menu }: HeaderProps) {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
   const address = useAtom(CONTRACT_ADDRESS_ATOM);
   const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
+  const isMobile = useMediaQuery(600);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const streamTeasers = useStreamTeasersState();
+
+  const burgerMenuHandler = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     if (streamTeasers) {
       setStreamTeasers(streamTeasers);
     }
   }, [streamTeasers, setStreamTeasers]);
+
+  useEffect(() => {
+    if (isMobileMenuOpen && !isMobile) {
+      burgerMenuHandler();
+    }
+  }, [isMobile, isMobileMenuOpen]);
 
   const handleOpenWalletModal = () => {
     setIsWalletModalOpen(true);
@@ -45,47 +60,63 @@ function Header({ menu }: HeaderProps) {
           </Link>
           {account ? (
             <>
-              <nav className={cx(styles.menu)}>
-                {Object.keys(menu).map((item) => {
-                  const { url } = menu[item];
+              {!isMobile && (
+                <>
+                  <nav className={cx(styles.menu)}>
+                    {Object.keys(menu).map((item) => {
+                      const { url } = menu[item];
 
-                  return (
-                    <Link to={url} key={item}>
-                      <p
-                        className={cx(
-                          styles['menu-item'],
-                          location.pathname === `/${url}` ? styles['menu-item--active'] : '',
-                        )}>
-                        {item}
-                      </p>
-                    </Link>
-                  );
-                })}
-              </nav>
-              <div className={cx(styles['wallet-info'])}>
-                <div className={cx(styles.balance)}>
-                  <img src={coin} alt="wara coin" className={cx(styles['balance-coin-image'])} />
-                  <div className={cx(styles['balance-value'])}>{Number(account?.balance.value).toFixed(2)}</div>
-                  <div className={cx(styles['balance-currency-name'])}>Vara</div>
-                </div>
-                <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
-                  {address && (
-                    <Identicon
-                      value={ADDRESS.CONTRACT}
-                      size={21}
-                      theme="polkadot"
-                      className={cx(styles['description-icon'])}
-                    />
-                  )}
-                  <div className={cx(styles['description-name'])}>{account?.meta.name}</div>
-                </button>
-              </div>
+                      return (
+                        <Link to={url} key={item}>
+                          <p
+                            className={cx(
+                              styles['menu-item'],
+                              location.pathname === `/${url}` ? styles['menu-item--active'] : '',
+                            )}>
+                            {item}
+                          </p>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                  <div className={cx(styles['wallet-info'])}>
+                    <div className={cx(styles.balance)}>
+                      <img src={coin} alt="wara coin" className={cx(styles['balance-coin-image'])} />
+                      <div className={cx(styles['balance-value'])}>{Number(account?.balance.value).toFixed(2)}</div>
+                      <div className={cx(styles['balance-currency-name'])}>Vara</div>
+                    </div>
+                    <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
+                      {address && (
+                        <Identicon
+                          value={ADDRESS.CONTRACT}
+                          size={21}
+                          theme="polkadot"
+                          className={cx(styles['description-icon'])}
+                        />
+                      )}
+                      <div className={cx(styles['description-name'])}>{account?.meta.name}</div>
+                    </button>
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <Button label="connect" variant="outline" onClick={handleOpenWalletModal} />
           )}
+          {account && isMobile && (
+            <div className={cx(styles['burger-menu-button'])}>
+              <Button label="" variant="icon" onClick={() => setIsMobileMenuOpen(true)} icon={menuIcon} />
+            </div>
+          )}
         </div>
       </header>
+      {isMobileMenuOpen && (
+        <>
+          <div className={cx(styles['blur-background'])} />
+          <BurgerMenu burgerMenuHandler={burgerMenuHandler} />
+        </>
+      )}
+
       {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
     </>
   );

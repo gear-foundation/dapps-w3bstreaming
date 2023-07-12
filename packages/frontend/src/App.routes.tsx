@@ -3,7 +3,7 @@ export const CREATE_STREAM = 'create-stream';
 export const ACCOUNT = 'account';
 export const STREAM = 'stream/:id';
 
-export const routes = {
+export const routes: { [key: string]: { url: string } } = {
   Streams: {
     url: `${STREAMS}`,
   },

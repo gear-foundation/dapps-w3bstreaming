@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { PlayerProps } from './Player.interfaces';
 import { cx } from '@/utils';
 import styles from './Player.module.scss';
@@ -27,11 +27,17 @@ function Player({
 }: PlayerProps) {
   const playerRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const [isOnPause, setIsOnPause] = useState<boolean>(false);
+  const [volume, setVolume] = useState(50);
 
   useEffect(() => {
     playerRef.current?.load();
     onReady?.(playerRef.current as HTMLVideoElement);
   }, [onReady]);
+
+  useEffect(() => {
+    const player = playerRef.current;
+    player!.volume = volume / 100;
+  }, [volume]);
 
   const handlePause = () => {
     if (isOnPause) {
@@ -40,6 +46,19 @@ function Player({
     } else {
       playerRef.current?.pause();
       setIsOnPause(true);
+    }
+  };
+
+  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const volumePercent = e.target.value;
+    setVolume(Number(volumePercent));
+  };
+
+  const handleFullScreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      playerRef.current?.requestFullscreen();
     }
   };
 
@@ -60,7 +79,7 @@ function Player({
         <div className={cx(styles.left, styles.part)}>
           <div className={cx(styles.volume)}>
             <Button variant="icon" label="" icon={VolumeSVG} />
-            <input type="range" min="0" max="100" />
+            <input type="range" min="0" max="100" onChange={handleVolumeChange} />
           </div>
         </div>
         <div className={cx(styles.center, styles.part)}>
@@ -92,7 +111,7 @@ function Player({
           {mode === 'broadcast' && <Button variant="icon" label="" icon={LeaveSVG} onClick={onStopStream} />}
         </div>
         <div className={cx(styles.right, styles.part)}>
-          <Button variant="icon" label="" icon={FullScreenSVG} />
+          <Button variant="icon" label="" icon={FullScreenSVG} onClick={handleFullScreen} />
         </div>
       </div>
     </div>
