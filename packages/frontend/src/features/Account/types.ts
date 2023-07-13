@@ -1,5 +1,3 @@
-import { HexString } from '@gear-js/api';
-
 export interface User {
   name: string;
   surname: string;
@@ -11,5 +9,5 @@ export interface User {
 }
 
 export interface UsersRes {
-  [key: HexString]: User;
+  [key: string]: User;
 }
