@@ -22,4 +22,16 @@ function useEditProfileMessage() {
   return useSendMessage(ADDRESS.CONTRACT, meta);
 }
 
+function useCreateStreamMetadata() {
+  return useMetadata(metaTxt);
+}
+
+function useSubscribeToStreamMessage() {
+  const meta = useCreateStreamMetadata();
+
+  return useSendMessage(ADDRESS.CONTRACT, meta);
+}
+
+export { useSubscribeToStreamMessage };
+
 export { useUsersState, useEditProfileMessage };

@@ -1,18 +1,14 @@
 import { TableRow } from '@/ui/Table/Table.interfaces';
 
 export interface SubscriptionsData extends TableRow {
-  id: number;
+  id: string;
   Streamer: string;
-  'Subscription Date': string;
-  'Date of next write-off': string;
+  nextWriteOff: string;
 }
 
 export interface SubscribersData extends TableRow {
-  id: number;
+  id: string;
   User: string;
-  'Subscription Date': string;
-  'Last payment date': string;
-  'Date of next write-off': string;
 }
 
 export interface UsersTableProps {

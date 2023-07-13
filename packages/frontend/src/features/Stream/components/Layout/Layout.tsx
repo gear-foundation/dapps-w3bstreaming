@@ -1,5 +1,5 @@
+import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 import styles from './Layout.module.scss';
 import { cx, socket } from '@/utils';
 import { Button } from '@/ui';
@@ -8,12 +8,24 @@ import editProfileSVG from '@/assets/icons/edit-profile-icon.svg';
 import timerSVG from '@/assets/icons/timer-icon.svg';
 import eyeSVG from '@/assets/icons/eye-icon.svg';
 import { LayoutProps } from './Layout.interfaces';
-import { SubscribeModal } from '../SubscribeModal';
+import { SubscribeModal } from '@/features/Account/components/SubscribeModal';
 
-function Layout({ isBroadcaster, title, description, startTime, broadcasterInfo, broadcasterId }: LayoutProps) {
-  const { id: streamId } = useParams();
+function Layout({
+  isBroadcaster,
+  title,
+  description,
+  startTime,
+  broadcasterInfo,
+  broadcasterId,
+  isUserSubscribed,
+}: LayoutProps) {
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
   const [connectionsCount, setConnectionsCount] = useState(0);
+  const navigate = useNavigate();
+
+  const handleRedirectToAccount = () => {
+    navigate('/account');
+  };
 
   const handleCloseSubscribeModal = () => {
     setIsSubscribeModalOpen(false);
@@ -65,12 +77,29 @@ function Layout({ isBroadcaster, title, description, startTime, broadcasterInfo,
           </div>
         </div>
         {isBroadcaster ? (
-          <Button variant="outline" label="Edit Profile" icon={editProfileSVG} />
+          <Button variant="outline" label="Edit Profile" icon={editProfileSVG} onClick={handleRedirectToAccount} />
         ) : (
-          <Button variant="primary" label="Subscribe" onClick={handleOpenSubscribeModal} />
+          <>
+            {isUserSubscribed ? (
+              <Button
+                variant="primary"
+                label="Unsubscribe"
+                onClick={handleOpenSubscribeModal}
+                className={cx(styles['unsubscribe-button'])}
+              />
+            ) : (
+              <Button variant="primary" label="Subscribe" onClick={handleOpenSubscribeModal} />
+            )}
+          </>
         )}
       </div>
-      {isSubscribeModalOpen && <SubscribeModal onClose={handleCloseSubscribeModal} speakerId={broadcasterId} />}
+      {isSubscribeModalOpen && (
+        <SubscribeModal
+          type={isUserSubscribed ? 'unsubscribe' : 'subscribe'}
+          onClose={handleCloseSubscribeModal}
+          speakerId={broadcasterId}
+        />
+      )}
     </div>
   );
 }

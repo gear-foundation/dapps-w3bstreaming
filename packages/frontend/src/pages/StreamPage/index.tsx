@@ -18,7 +18,7 @@ function StreamPage() {
 
   return (
     <div>
-      {streamTeaser && (
+      {streamTeaser && account && users && (
         <>
           <div>
             {account?.decodedAddress === streamTeaser.broadcaster ? (
@@ -34,6 +34,7 @@ function StreamPage() {
             description={streamTeaser.description}
             startTime={new Date(Number(streamTeaser?.startTime?.replace(/,/g, '')) * 1000)}
             broadcasterInfo={users?.[streamTeaser.broadcaster]}
+            isUserSubscribed={users?.[account?.decodedAddress]?.subscribers?.includes(streamTeaser.broadcaster)}
           />
         </>
       )}

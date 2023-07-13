@@ -7,4 +7,5 @@ export interface LayoutProps {
   description?: string;
   startTime: Date;
   broadcasterInfo: User;
+  isUserSubscribed: boolean;
 }

@@ -12,19 +12,17 @@ const address = process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001';
 
 export const socket: Socket = io(address);
 
-function ScrollToTop({ children }: any) {
+function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const canControlScrollRestoration = 'scrollRestoration' in window.history;
-    if (canControlScrollRestoration) {
-      window.history.scrollRestoration = 'manual';
-    }
-
-    window.scrollTo(0, 0);
+    document.documentElement.scrollTo({
+      top: 0,
+      left: 0,
+    });
   }, [pathname]);
 
-  return children;
+  return null;
 }
 
 export { ScrollToTop };

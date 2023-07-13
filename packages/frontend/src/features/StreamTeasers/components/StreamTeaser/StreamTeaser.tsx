@@ -3,8 +3,8 @@ import styles from './StreamTeaser.module.scss';
 import streamDateIcon from '@/assets/icons/hexagon-icon.png';
 import { StreamProps } from '../../types';
 
-function StreamTeaser({ title, startTime, endTime, description, imgLink, broadcasterInfo }: StreamProps) {
-  const date = new Date(Number(startTime.replace(/,/g, '')) * 1000);
+function StreamTeaser({ title, startTime, description, imgLink, broadcasterInfo }: StreamProps) {
+  const date = new Date(Number(startTime.replace(/,/g, '')));
 
   return (
     <div className={cx(styles.card)}>
