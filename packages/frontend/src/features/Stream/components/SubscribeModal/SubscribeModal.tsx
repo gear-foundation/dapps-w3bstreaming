@@ -12,6 +12,10 @@ import { useSubscribeToStreamMessage } from '../../hooks';
 function SubscribeModal({ speakerId, onClose }: WalletModalProps) {
   const sendSubscribeMessage = useSubscribeToStreamMessage();
 
+  const handleCancelModal = () => {
+    onClose();
+  };
+
   const handleSubscribe = () => {
     if (speakerId) {
       const payload = {
@@ -20,20 +24,17 @@ function SubscribeModal({ speakerId, onClose }: WalletModalProps) {
         },
       };
 
+      handleCancelModal();
+
       sendSubscribeMessage(payload, {
         onSuccess: () => {
-          onClose();
+          window.location.reload();
         },
         onError: () => {
           console.log('error');
         },
       });
     }
-  };
-
-  const handleCancelModal = () => {
-    onClose();
-    window.location.reload();
   };
 
   return (
