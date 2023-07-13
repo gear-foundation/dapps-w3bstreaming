@@ -9,14 +9,14 @@ import { Button } from '@/ui';
 import { WalletModalProps } from './SubscribeModal.interface';
 import { useSubscribeToStreamMessage } from '../../hooks';
 
-function SubscribeModal({ streamId, onClose }: WalletModalProps) {
+function SubscribeModal({ speakerId, onClose }: WalletModalProps) {
   const sendSubscribeMessage = useSubscribeToStreamMessage();
 
   const handleSubscribe = () => {
-    if (streamId) {
+    if (speakerId) {
       const payload = {
-        SubscribeToStream: {
-          id: streamId,
+        Subscribe: {
+          account_id: speakerId,
         },
       };
 
@@ -25,7 +25,7 @@ function SubscribeModal({ streamId, onClose }: WalletModalProps) {
           onClose();
         },
         onError: () => {
-          throw new Error('error');
+          console.log('error');
         },
       });
     }
@@ -33,6 +33,7 @@ function SubscribeModal({ streamId, onClose }: WalletModalProps) {
 
   const handleCancelModal = () => {
     onClose();
+    window.location.reload();
   };
 
   return (

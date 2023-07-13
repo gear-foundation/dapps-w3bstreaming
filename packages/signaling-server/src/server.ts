@@ -53,13 +53,16 @@ io.on('connection', socket => {
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
-    if (!isValidSig(id, msg.signedMsg)) {
+    if (!isValidSig(msg.encodedId, msg.signedMsg)) {
+      //usual address
       return socket.emit('error', { message: `Signature isn't valid` });
     }
 
-    if (!(await isUserSubscribed(msg.streamId, id))) {
+    const broadcasterId = streams.get(msg.streamId) as string;
+
+    if (!(await isUserSubscribed(broadcasterId, id))) {
       return socket.emit('error', {
-        message: `You aren't subscribed to stream with id ${msg.streamId}`,
+        message: `You aren't subscribed to this speaker`,
       });
     }
 
@@ -68,8 +71,6 @@ io.on('connection', socket => {
         message: `Stream with id ${msg.streamId} hasn't started yet`,
       });
     }
-
-    const broadcasterId = streams.get(msg.streamId) as string;
 
     connections.get(broadcasterId)?.emit('watch', id, msg);
 

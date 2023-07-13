@@ -1,10 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
-import { cx } from '@/utils';
+import { ScrollToTop, cx } from '@/utils';
 import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
 import { StreamTeasersList } from '@/features/StreamTeasers';
 import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
@@ -20,6 +19,7 @@ function AppComponent() {
 
   return (
     <div className={cx(styles['app-container'])}>
+      <ScrollToTop />
       {isAppReady ? (
         <>
           <Header menu={routes} />

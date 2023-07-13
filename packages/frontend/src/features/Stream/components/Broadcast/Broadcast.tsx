@@ -114,7 +114,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           }
 
           const newRequiredIndexes = sequence.getIndexes(['microphone', 'camera']);
-          setLocalStream(() => new MediaStream(newRequiredIndexes.map((index) => commonStreamTracks[index])));
+          setLocalStream(() => new MediaStream(newRequiredIndexes.map((index) => commonStreamTracks[index as number])));
           setStreamType('camera');
         };
       } catch (err) {
@@ -168,7 +168,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   };
 
   const startStream = async () => {
-    if (!account?.address) {
+    if (!account?.decodedAddress) {
       return;
     }
 
@@ -200,7 +200,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
       setLocalStream(requestedStream);
 
-      socket.emit('broadcast', account?.address, { streamId });
+      socket.emit('broadcast', account?.decodedAddress, { streamId });
 
       socket.on('watch', (idOfWatcher: string, msg: WatchMsg) => {
         peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
@@ -217,7 +217,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           .createOffer()
           .then((offer) => peerConnection.current?.setLocalDescription(offer))
           .then(() =>
-            socket.emit('offer', account?.address, {
+            socket.emit('offer', account?.decodedAddress, {
               description: peerConnection.current?.localDescription,
               userId: idOfWatcher,
               streamId: msg.streamId,
@@ -240,7 +240,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
             .current!.createOffer()
             .then((offer) => peerConnection.current!.setLocalDescription(offer))
             .then(() =>
-              socket.emit('updateOffers', account?.address, {
+              socket.emit('updateOffers', account?.decodedAddress, {
                 description: peerConnection.current?.localDescription,
                 streamId,
               }),
@@ -263,7 +263,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       peerConnection.current?.removeTrack(sender);
     });
     peerConnection.current?.close();
-    socket.emit('stopBroadcasting', account?.address, {
+    socket.emit('stopBroadcasting', account?.decodedAddress, {
       streamId,
     });
     setStreamStatus('ended');

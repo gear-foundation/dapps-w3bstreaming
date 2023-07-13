@@ -2,7 +2,7 @@ import { useForm, isNotEmpty } from '@mantine/form';
 import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
 import { cx } from '@/utils';
-import { SectionProps } from './LayoutCreateForm.interface';
+import { FormValues, SectionProps } from './LayoutCreateForm.interface';
 import { TimePicker } from '@/ui/TimePicker';
 import CreateSVG from '@/assets/icons/correct-icon.svg';
 import CrossSVG from '@/assets/icons/cross-circle-icon.svg';
@@ -24,44 +24,47 @@ function LayoutCreateForm() {
       title: '',
       description: '',
       dayDate: new Date(),
-      startTimeDate: '',
-      endTimeDate: '',
-      image: '',
+      startTime: '',
+      endTime: '',
+      imgLink: '',
     },
     validate: {
-      title: isNotEmpty('Enter stream title'),
-      startTimeDate: (value, values) =>
-        value === values.endTimeDate ? 'Start time shouldnt be equal to End time' : null,
-      // image: isNotEmpty('Upload image'),
+      title: isNotEmpty('Stream title is required'),
+      startTime: (value, values) => (value === values.endTime ? 'Start time shouldnt be equal to End time' : null),
     },
   });
 
-  const { getInputProps, setFieldValue, onSubmit, reset } = form;
+  const { errors, getInputProps, setFieldValue, onSubmit, reset } = form;
 
-  const handleChangeDate = (field: 'dayDate' | 'startTimeDate' | 'endTimeDate', value: string | Date) => {
+  const handleChangeDate = (field: 'dayDate' | 'startTime' | 'endTime', value: string | Date) => {
     setFieldValue(field, value);
   };
 
-  const handleTransformData = ({ title, description, dayDate, startTimeDate, endTimeDate, image }: any) => {
-    const startDate = new Date(dayDate);
-    startDate.setHours(startTimeDate.split(':')[0]);
-    startDate.setMinutes(startTimeDate.split(':')[1]);
+  const handleTransformData = ({ title, description, dayDate, startTime, endTime, imgLink }: FormValues) => {
+    const day = dayDate.getDate();
+    const month = dayDate.getMonth();
+    const year = dayDate.getFullYear();
+
+    const startDate = new Date(year, month, day);
+
+    startDate.setHours(Number(startTime.split(':')[0]));
+    startDate.setMinutes(Number(startTime.split(':')[1]));
     startDate.setSeconds(0);
     const startTimestamp = startDate.getTime();
 
-    const endDate = new Date(dayDate);
-    endDate.setHours(endTimeDate.split(':')[0]);
-    endDate.setMinutes(endTimeDate.split(':')[1]);
+    const endDate = new Date(year, month, day);
+    endDate.setHours(Number(endTime.split(':')[0]));
+    endDate.setMinutes(Number(endTime.split(':')[1]));
     endDate.setSeconds(0);
     const endTimestamp = endDate.getTime();
 
-    const difference = endTimestamp - startTimestamp;
-
     const payload = {
       NewStream: {
-        timestamp: difference,
+        startTime: startTimestamp,
+        endDate: endTimestamp,
         title,
-        description: description || 'None',
+        description,
+        imgLink,
       },
     };
 
@@ -70,9 +73,13 @@ function LayoutCreateForm() {
         reset();
       },
       onError: () => {
-        throw new Error('error');
+        console.log('error');
       },
     });
+  };
+
+  const handleDropImg = (preview: string) => {
+    setFieldValue('imgLink', preview);
   };
 
   return (
@@ -82,12 +89,13 @@ function LayoutCreateForm() {
         <div className={cx(styles.content)}>
           <div className={cx(styles.left)}>
             <div className={cx(styles['dropzone-wrapper'])}>
-              <DropzoneUploader />
+              <DropzoneUploader onDropFile={handleDropImg} />
             </div>
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>
                 <div className={cx(styles.input)}>
                   <Input size="large" placeholder="Type stream title" {...getInputProps('title')} />
+                  <span className={cx(styles['field-error'])}>{errors.title}</span>
                 </div>
                 <div className={cx(styles.input)}>
                   <InputArea placeholder="Type stream description" {...getInputProps('description')} />
@@ -107,10 +115,11 @@ function LayoutCreateForm() {
             </Section>
             <Section title="Stream time">
               <div className={cx(styles['time-pickers-wrapper'])}>
-                <TimePicker onChange={(time: string | null) => handleChangeDate('startTimeDate', time as string)} />
+                <TimePicker onChange={(time: string | null) => handleChangeDate('startTime', time as string)} />
                 -
-                <TimePicker onChange={(time: string | null) => handleChangeDate('endTimeDate', time as string)} />
+                <TimePicker onChange={(time: string | null) => handleChangeDate('endTime', time as string)} />
               </div>
+              <span className={cx(styles['field-error'])}>{errors.startTime}</span>
             </Section>
           </div>
         </div>

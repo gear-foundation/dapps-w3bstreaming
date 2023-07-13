@@ -1,6 +1,7 @@
 export interface IWatchMsg {
   streamId: string;
   signedMsg: string;
+  encodedId: string;
 }
 
 export interface IBroadcastMsg {

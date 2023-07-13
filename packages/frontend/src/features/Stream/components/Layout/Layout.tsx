@@ -10,7 +10,7 @@ import eyeSVG from '@/assets/icons/eye-icon.svg';
 import { LayoutProps } from './Layout.interfaces';
 import { SubscribeModal } from '../SubscribeModal';
 
-function Layout({ isBroadcaster, title, description }: LayoutProps) {
+function Layout({ isBroadcaster, title, description, startTime, broadcasterInfo, broadcasterId }: LayoutProps) {
   const { id: streamId } = useParams();
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
   const [connectionsCount, setConnectionsCount] = useState(0);
@@ -35,9 +35,15 @@ function Layout({ isBroadcaster, title, description }: LayoutProps) {
         <div className={cx(styles.title)}>{title}</div>
         <div className={cx(styles['card-top-speaker-container'])}>
           <div className={cx(styles['card-top-speaker'])}>
-            <img className={cx(styles['card-top-speaker-photo'])} src={speakerPhoto} alt="" />
+            <img
+              className={cx(styles['card-top-speaker-photo'])}
+              src={broadcasterInfo?.imgLink || speakerPhoto}
+              alt=""
+            />
             <div className={cx(styles['card-top-speaker-content'])}>
-              <span className={cx(styles['card-top-speaker-name'])}>Panha Sela</span>
+              <span className={cx(styles['card-top-speaker-name'])}>
+                {broadcasterInfo?.name} {broadcasterInfo?.surname}
+              </span>
               <span className={cx(styles['card-top-speaker-descr'])}>Speaker</span>
             </div>
           </div>
@@ -53,7 +59,9 @@ function Layout({ isBroadcaster, title, description }: LayoutProps) {
           </div>
           <div className={cx(styles.time)}>
             <img src={timerSVG} alt="time" />
-            <span>11:00</span>
+            <span>
+              {startTime.getHours()}:{startTime.getMinutes().toString().padStart(2, '0')}
+            </span>
           </div>
         </div>
         {isBroadcaster ? (
@@ -62,7 +70,7 @@ function Layout({ isBroadcaster, title, description }: LayoutProps) {
           <Button variant="primary" label="Subscribe" onClick={handleOpenSubscribeModal} />
         )}
       </div>
-      {isSubscribeModalOpen && <SubscribeModal onClose={handleCloseSubscribeModal} streamId={streamId} />}
+      {isSubscribeModalOpen && <SubscribeModal onClose={handleCloseSubscribeModal} speakerId={broadcasterId} />}
     </div>
   );
 }

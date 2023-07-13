@@ -59,10 +59,16 @@
 }
 
 .input {
+    position: relative;
     margin-bottom: 10px 
 }
 
 .controls {
     display: flex;
     padding-top: 10px;
+}
+
+.field-error {
+    color: red;
+    font-size: 14px;
 }

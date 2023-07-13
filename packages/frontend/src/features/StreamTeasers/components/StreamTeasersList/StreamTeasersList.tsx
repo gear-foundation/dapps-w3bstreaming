@@ -5,12 +5,14 @@ import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
 import styles from './StreamTeasersList.module.scss';
 import { useStreamTeasersState } from '../../hooks';
-import { selectTeasersMenu, tes } from '../../config';
+import { selectTeasersMenu } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
+import { useUsersState } from '@/features/Account/hooks';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const streamTeasers = useStreamTeasersState();
+  const { users } = useUsersState();
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
   const [searchedValue, setSearchedValue] = useState<string>('');
@@ -57,8 +59,8 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       </div>
       <div className={cx(styles.content)}>
         {showedTeasers.slice(0, showedTeasersCount).map((item) => (
-          <Link to={`/stream/${item.id}`}>
-            <StreamTeaser key={item.title + item.description + item.timestamp} {...item} />
+          <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
+            <StreamTeaser broadcasterInfo={users[item.broadcaster]} {...item} />
           </Link>
         ))}
       </div>

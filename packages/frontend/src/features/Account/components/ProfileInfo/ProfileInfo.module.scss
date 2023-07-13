@@ -3,6 +3,7 @@
 
 .profile-info {
     width: 275px;
+    max-width: 275px;
     margin-right: 32px;
     padding: 32px;
     display: flex;
@@ -14,6 +15,11 @@
         padding-top: 20px;
         font-size: 16px;
         font-weight: 600;
+    }
+
+    &-image {
+        max-width: 211px;
+        max-height: 211px;
     }
 
     &-subs {
@@ -36,4 +42,37 @@
         font-size: 14px;
         font-weight: 400;
     }
+
+    &-form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+    }
+
+    & .save-button {
+        width: 100%;
+    }
+}
+
+.dropzone-wrapper {
+    width: 211px;
+    height: 211px;
+}
+
+.field-error {
+    position: absolute;
+    bottom: -18px;
+    color: red;
+    font-size: 14px;
+}
+
+.form-item {
+    position: relative;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

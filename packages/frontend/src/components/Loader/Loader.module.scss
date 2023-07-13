@@ -11,6 +11,14 @@
   align-items: center;
 }
 
+.cover {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .lds-ripple {
   display: inline-block;
   position: relative;

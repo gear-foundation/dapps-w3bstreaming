@@ -1,25 +1,25 @@
 import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
+import { User } from '../Account/types';
 
-export interface StreamTeaserProps {
+export type StreamProps = Stream;
+
+export interface Stream {
   broadcaster: HexString;
-  timestamp: string;
+  startTime: string;
+  endTime: string;
   title: string;
+  imgLink?: string;
   description?: string;
+  broadcasterInfo?: User;
   watchers: [];
 }
 
-export interface StreamTeasers {
-  [key: string]: {
-    broadcaster: HexString;
-    timestamp: string;
-    title: string;
-    description?: string;
-    watchers: [];
-  };
+export interface Streams {
+  [key: string]: Stream;
 }
 
-export type StreamTeaser =
+export type StreamTeaserRes =
   | string
   | number
   | boolean
@@ -33,8 +33,10 @@ export type StreamTeaser =
 export interface FormattedTeaser {
   id: string;
   broadcaster: HexString;
-  timestamp: string;
+  startTime: string;
+  endTime: string;
   title: string;
   description?: string;
+  imgLink?: string;
   watchers: [];
 }

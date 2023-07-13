@@ -1,27 +1,40 @@
 import { MediaTrackSequenceType } from './types';
 
 export class MediaStreamSequence {
-  mediaTrackSequence: Partial<Record<MediaTrackSequenceType, number>> = {};
+  mediaTrackSequence: Map<MediaTrackSequenceType, number> = new Map();
 
   getSequence() {
-    return this.mediaTrackSequence;
+    return Array.from(this.mediaTrackSequence);
   }
 
   getLength() {
-    return Object.values(this.mediaTrackSequence).length;
+    return this.mediaTrackSequence.size;
   }
 
   add(type: MediaTrackSequenceType) {
-    this.mediaTrackSequence[type] = this.getLength();
+    const index = this.getLength();
+    this.mediaTrackSequence.set(type, index);
+  }
+
+  removeByType(type: MediaTrackSequenceType) {
+    this.mediaTrackSequence.delete(type);
+    this.reindexAfter(type);
+  }
+
+  reindexAfter(removedType: MediaTrackSequenceType) {
+    const i = this.mediaTrackSequence.get(removedType) as number;
+    this.mediaTrackSequence.forEach((value, key) => {
+      if (value > i) {
+        this.mediaTrackSequence.set(key, value - 1);
+      }
+    });
   }
 
   getIndex(type: MediaTrackSequenceType) {
-    return this.mediaTrackSequence[type];
+    return this.mediaTrackSequence.get(type);
   }
 
   getIndexes(types: MediaTrackSequenceType[]) {
-    return types
-      .filter((type) => this.mediaTrackSequence[type] !== undefined)
-      .map((type) => this.mediaTrackSequence[type] as number);
+    return types.filter((type) => this.mediaTrackSequence.has(type)).map((type) => this.mediaTrackSequence.get(type));
   }
 }

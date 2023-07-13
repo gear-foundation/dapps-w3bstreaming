@@ -1,7 +1,7 @@
 import { DropzoneUploader } from '@ui';
 
-function PictureDropzone() {
-  return <DropzoneUploader />;
+function PictureDropzone({ text, onDropFile }: any) {
+  return <DropzoneUploader onDropFile={onDropFile} text={text} />;
 }
 
 export { PictureDropzone };

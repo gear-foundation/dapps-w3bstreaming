@@ -10,7 +10,6 @@ import { Player } from '../Player';
 import { Loader } from '@/components';
 import { RTC_CONFIG } from '../../config';
 import { Button } from '@/ui';
-import { MediaStreamSequence } from '../../utils';
 
 function Watch({ socket, streamId }: WatchProps) {
   const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
@@ -19,31 +18,30 @@ function Watch({ socket, streamId }: WatchProps) {
   const { account } = useAccount();
   const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
   const [streamStatus, setStreamStatus] = useState<StreamState>('ready-to-play');
-  const mediaTrackSequence: MutableRefObject<MediaStreamSequence | null> = useRef(null);
   const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
 
   const handlePlayStream = useCallback(() => {
-    if (!account?.address || !publicKey?.signature || !streamId) {
+    if (!account?.decodedAddress || !publicKey?.signature || !streamId) {
       return;
     }
 
     setStreamStatus('loading');
-    socket.emit('watch', account?.address, {
+    socket.emit('watch', account?.decodedAddress, {
       streamId,
       signedMsg: publicKey?.signature,
+      encodedId: account.address,
     });
 
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
 
     socket.on('offer', (broadcasterAddress: string, msg: OfferMsg) => {
-      mediaTrackSequence.current = msg.mediaSequence;
       peerConnection.current
         ?.setRemoteDescription(msg.description)
         .then(() => peerConnection.current?.createAnswer())
         .then((answer: any) => peerConnection.current?.setLocalDescription(answer))
         .then(() => {
           socket.emit('answer', broadcasterAddress, {
-            watcherId: account?.address,
+            watcherId: account?.decodedAddress,
             description: peerConnection.current?.localDescription,
           });
           setLocalStream(null);
@@ -53,7 +51,7 @@ function Watch({ socket, streamId }: WatchProps) {
         if (event.candidate) {
           socket.emit('candidate', broadcasterAddress, {
             candidate: event.candidate,
-            id: account?.address,
+            id: account?.decodedAddress,
           });
         }
       };
@@ -66,8 +64,8 @@ function Watch({ socket, streamId }: WatchProps) {
         }
       };
 
-      peerConnection.current!.onnegotiationneeded = () => {
-        peerConnection.current!.setRemoteDescription(msg.description);
+      peerConnection.current!.onnegotiationneeded = async () => {
+        await peerConnection.current!.setRemoteDescription(msg.description);
         peerConnection
           .current!.createAnswer()
           .then((answer) => {
@@ -75,7 +73,7 @@ function Watch({ socket, streamId }: WatchProps) {
           })
           .then(() => {
             socket.emit('answer', broadcasterAddress, {
-              watcherId: account?.address,
+              watcherId: account?.decodedAddress,
               description: peerConnection.current?.localDescription,
             });
           });
@@ -86,7 +84,7 @@ function Watch({ socket, streamId }: WatchProps) {
       if (message === `Stream with id ${streamId} hasn't started yet`) {
         setStreamStatus('not-started');
       }
-      if (message === `You aren't subscribed to stream with id ${streamId}`) {
+      if (message === `You aren't subscribed to this speaker`) {
         setStreamStatus('not-subscribed');
       }
     });
@@ -94,7 +92,7 @@ function Watch({ socket, streamId }: WatchProps) {
     socket.on('candidate', (_: string, msg: CandidateMsg) => {
       peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
     });
-  }, [account?.address, publicKey?.signature, socket, streamId]);
+  }, [account?.address, account?.decodedAddress, publicKey?.signature, socket, streamId]);
 
   useEffect(() => {
     if (remoteVideo.current && localStream) {
@@ -126,9 +124,10 @@ function Watch({ socket, streamId }: WatchProps) {
     if (streamStatus === 'not-started') {
       if (account?.address && publicKey?.signature && !retryIntervalId.current) {
         retryIntervalId.current = setInterval(() => {
-          socket.emit('watch', account?.address, {
+          socket.emit('watch', account?.decodedAddress, {
             streamId,
             signedMsg: publicKey?.signature,
+            encodedId: account.address,
           });
         }, 2000);
       }
@@ -139,7 +138,7 @@ function Watch({ socket, streamId }: WatchProps) {
         clearInterval(retryIntervalId.current);
       }
     }
-  }, [streamStatus, account?.address, publicKey?.signature, streamId, socket]);
+  }, [streamStatus, account?.address, account?.decodedAddress, publicKey?.signature, streamId, socket]);
 
   const handlePlayerReady = (player: HTMLVideoElement) => {
     remoteVideo.current = player;

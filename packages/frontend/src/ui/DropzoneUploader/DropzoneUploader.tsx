@@ -1,14 +1,21 @@
 import { useDropzone } from 'react-dropzone';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cx } from '@/utils';
 import picImage from '@/assets/icons/picture.png';
 import closeIcon from '@/assets/icons/cross-icon.svg';
 import styles from './DropzoneUploader.module.scss';
 import { Button } from '../Button';
+import { DropzoneUploaderProps } from './DropzoneUploader.interface';
 
-function DropzoneUploader() {
-  const uploadUrl = 'https://httpbin.org/post';
-  const [preview, setPreview] = useState('');
+function DropzoneUploader({ text, previewLink, onDropFile }: DropzoneUploaderProps) {
+  const uploadUrl = 'http://127.0.0.1:5001/api/v0/add';
+  const [preview, setPreview] = useState(previewLink || '');
+
+  useEffect(() => {
+    if (preview) {
+      onDropFile(preview);
+    }
+  }, [preview, onDropFile]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const formData = new FormData();
@@ -17,9 +24,9 @@ function DropzoneUploader() {
     fetch(uploadUrl, {
       method: 'POST',
       body: formData,
-    }).then(() => {
-      setPreview(URL.createObjectURL(acceptedFiles[0]));
-    });
+    })
+      .then((res) => res.json())
+      .then(({ Hash }) => setPreview(`http://localhost:8080/ipfs/${Hash}`));
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -51,7 +58,7 @@ function DropzoneUploader() {
               <img src={picImage} alt="upload" />
               <h5 className={cx(styles['label-title'])}>Upload photo</h5>
               <p className={cx(styles['label-description'])}>
-                Image not less than 1280x760 in JPG, JPEG or PNG format, up to 1 MB in size
+                {text !== undefined || 'Image not less than 1280x760 in JPG, JPEG or PNG format, up to 1 MB in size'}
               </p>
             </div>
           )}

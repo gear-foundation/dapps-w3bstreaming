@@ -1,17 +1,15 @@
 import { cx } from '@/utils';
 import styles from './StreamTeaser.module.scss';
 import streamDateIcon from '@/assets/icons/hexagon-icon.png';
-import streamPhoto from '@/assets/icons/photo_2023-05-28_18-47-34 1.png';
-import speakerPhoto from '@/assets/icons/Ellipse 21.png';
-import { StreamTeaserProps } from '../../types';
+import { StreamProps } from '../../types';
 
-function StreamTeaser({ title, timestamp, description }: StreamTeaserProps) {
-  const date = new Date(Number(timestamp.replace(/,/g, '')) * 1000);
+function StreamTeaser({ title, startTime, endTime, description, imgLink, broadcasterInfo }: StreamProps) {
+  const date = new Date(Number(startTime.replace(/,/g, '')) * 1000);
 
   return (
     <div className={cx(styles.card)}>
       <div className={cx(styles['card-top'])}>
-        <img className={cx(styles['card-top-image'])} src={streamPhoto} alt="" />
+        <img className={cx(styles['card-top-image'])} src={imgLink} alt="" />
         <div className={cx(styles['card-top-date-container'])}>
           <div className={cx(styles['card-top-date'])}>
             <img className={cx(styles['card-top-date-image'])} src={streamDateIcon} alt="" />
@@ -25,9 +23,11 @@ function StreamTeaser({ title, timestamp, description }: StreamTeaserProps) {
         </div>
         <div className={cx(styles['card-top-speaker-container'])}>
           <div className={cx(styles['card-top-speaker'])}>
-            <img className={cx(styles['card-top-speaker-photo'])} src={speakerPhoto} alt="" />
+            <img className={cx(styles['card-top-speaker-photo'])} src={broadcasterInfo?.imgLink} alt="speaker" />
             <div className={cx(styles['card-top-speaker-content'])}>
-              <span className={cx(styles['card-top-speaker-name'])}>Panha Sela</span>
+              <span className={cx(styles['card-top-speaker-name'])}>
+                {broadcasterInfo?.name} {broadcasterInfo?.surname}
+              </span>
               <span className={cx(styles['card-top-speaker-descr'])}>Speaker</span>
             </div>
           </div>
