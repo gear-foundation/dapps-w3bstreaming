@@ -11,7 +11,7 @@ import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
 import { useUsersState } from '@/features/Account/hooks';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
-  const streamTeasers = useStreamTeasersState();
+  const { streamTeasers } = useStreamTeasersState();
   const { users } = useUsersState();
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
@@ -60,7 +60,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       <div className={cx(styles.content)}>
         {showedTeasers.slice(0, showedTeasersCount).map((item) => (
           <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
-            <StreamTeaser broadcasterInfo={users[item.broadcaster]} {...item} />
+            <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
           </Link>
         ))}
       </div>

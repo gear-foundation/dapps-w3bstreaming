@@ -26,7 +26,7 @@ function Header({ menu }: HeaderProps) {
   const isMobile = useMediaQuery(600);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
-  const streamTeasers = useStreamTeasersState();
+  const { streamTeasers } = useStreamTeasersState();
 
   const burgerMenuHandler = () => {
     setIsMobileMenuOpen(false);
