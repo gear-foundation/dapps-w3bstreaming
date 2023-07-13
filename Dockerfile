@@ -4,12 +4,6 @@ WORKDIR /usr/src
 
 COPY . /usr/src
 
-RUN mkdir -p ../../target/wasm32-unknown-unknown/release
-
-COPY /compiled-contract/web3streaming.meta.txt /target/wasm32-unknown-unknown/release/web3streaming.meta.txt
-
-COPY /compiled-contract/web3streaming.opt.wasm /target/wasm32-unknown-unknown/release/web3streaming.opt.wasm
-
 RUN apk update
 
 RUN apk add make curl
