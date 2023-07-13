@@ -19,7 +19,9 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
-    setTeasers(Object.keys(streamTeasers).map((key) => ({ ...streamTeasers[key], id: key })));
+    if (streamTeasers) {
+      setTeasers(Object.keys(streamTeasers).map((key) => ({ ...streamTeasers[key], id: key })));
+    }
   }, [streamTeasers]);
 
   const handleExpandPage = () => {

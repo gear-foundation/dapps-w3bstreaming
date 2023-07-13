@@ -94,6 +94,13 @@ function Watch({ socket, streamId }: WatchProps) {
     });
   }, [account?.address, account?.decodedAddress, publicKey?.signature, socket, streamId]);
 
+  useEffect(
+    () => () => {
+      socket.emit('stopWatching', { streamId });
+    },
+    [socket, streamId],
+  );
+
   useEffect(() => {
     if (remoteVideo.current && localStream) {
       setStreamStatus('streaming');

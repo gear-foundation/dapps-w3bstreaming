@@ -54,7 +54,6 @@ io.on('connection', socket => {
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
     if (!isValidSig(msg.encodedId, msg.signedMsg)) {
-      //usual address
       return socket.emit('error', { message: `Signature isn't valid` });
     }
 
