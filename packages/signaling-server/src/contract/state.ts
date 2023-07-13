@@ -19,6 +19,8 @@ export async function isUserSubscribed(
   watcherId: string
 ): Promise<boolean> {
   const state = await getState();
-
-  return state.users[broadcasterId].subscribers?.includes(watcherId);
+  console.log(state);
+  return (
+    state.users?.[broadcasterId]?.subscribers?.includes(watcherId) || false
+  );
 }
