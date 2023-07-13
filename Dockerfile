@@ -6,9 +6,9 @@ COPY . /usr/src
 
 RUN mkdir -p ../../target/wasm32-unknown-unknown/release
 
-COPY /usr/src/compiled-contract/web3streaming.meta.txt /target/wasm32-unknown-unknown/release/web3streaming.meta.txt
+COPY /compiled-contract/web3streaming.meta.txt /target/wasm32-unknown-unknown/release/web3streaming.meta.txt
 
-COPY /usr/src/compiled-contract/web3streaming.opt.wasm /target/wasm32-unknown-unknown/release/web3streaming.opt.wasm
+COPY /compiled-contract/web3streaming.opt.wasm /target/wasm32-unknown-unknown/release/web3streaming.opt.wasm
 
 RUN apk update
 
