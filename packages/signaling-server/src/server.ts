@@ -123,11 +123,6 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('stopWatching', (id, msg) => {
-    connectionsPerStream.get(msg.streamId)!.count--;
-    connections.delete(id);
-  });
-
   socket.on('disconnect', r => {
     console.log('CLOSE', r);
   });
