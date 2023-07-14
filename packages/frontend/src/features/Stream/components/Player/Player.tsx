@@ -13,6 +13,8 @@ import BLockedCameraSVG from '@/assets/icons/player-camera-blocked-icon.svg';
 import LeaveSVG from '@/assets/icons/player-leave-icon.svg';
 import FullScreenSVG from '@/assets/icons/player-fullscreen-icon.svg';
 import VolumeSVG from '@/assets/icons/player-volume-icon.svg';
+import VolumeMutedSVG from '@/assets/icons/player-volume-muted-icon.svg';
+import PauseSVG from '@/assets/icons/pause-icon.svg';
 
 function Player({
   mode,
@@ -88,12 +90,14 @@ function Player({
       <div className={cx(styles.controls)}>
         <div className={cx(styles.left, styles.part)}>
           <div className={cx(styles.volume)}>
-            <Button variant="icon" label="" icon={VolumeSVG} onClick={handleMuteVolume} />
+            <Button variant="icon" label="" icon={volume ? VolumeSVG : VolumeMutedSVG} onClick={handleMuteVolume} />
             <input type="range" min="0" max="100" onChange={handleVolumeChange} value={volume} />
           </div>
         </div>
         <div className={cx(styles.center, styles.part)}>
-          {mode === 'watch' && <Button variant="icon" label="" icon={PlaySVG} onClick={handlePause} />}
+          {mode === 'watch' && (
+            <Button variant="icon" label="" icon={isOnPause ? PlaySVG : PauseSVG} onClick={handlePause} />
+          )}
           {mode === 'broadcast' && (
             <Button
               variant="icon"
