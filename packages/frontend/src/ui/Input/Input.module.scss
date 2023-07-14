@@ -36,6 +36,6 @@
     &::placeholder {
         font-size: 16px;
         font-weight: 400;
-        color: 1px solid rgba(0, 0, 0, 0.2)
+        color: theme-var($placeholder-input)
     }
 }
