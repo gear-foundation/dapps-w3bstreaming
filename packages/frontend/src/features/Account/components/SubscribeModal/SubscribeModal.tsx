@@ -5,11 +5,11 @@ import playSVG from '@/assets/icons/play-icon.svg';
 import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
 import playlistCrossedSVG from '@/assets/icons/playlist-crossed-icon.svg';
 import { Button } from '@/ui';
-import { WalletModalProps } from './SubscribeModal.interface';
+import { SubscribeModalProps } from './SubscribeModal.interface';
 import { useSubscribeToStreamMessage } from '../../hooks';
 import styles from './SubscribeModal.module.scss';
 
-function SubscribeModal({ speakerId, type, onClose }: WalletModalProps) {
+function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
   const sendSubscribeMessage = useSubscribeToStreamMessage();
 
   const handleCancelModal = () => {

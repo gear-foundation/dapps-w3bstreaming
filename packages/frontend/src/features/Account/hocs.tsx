@@ -23,7 +23,7 @@ function withData(Component: FC<UsersTableProps>): (props: WithDataProps) => JSX
           users[account.decodedAddress]?.subscriptions?.map((user) => ({
             id: user.accountId,
             Streamer: `${users[user.accountId].name} ${users[user.accountId].surname}`,
-            nextWriteOff: user.nextWriteOff,
+            'Date of next write-off': user.nextWriteOff,
           })) || [];
 
         setSubsribersInfo(subcribersData);

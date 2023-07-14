@@ -1,35 +1,54 @@
+import { useState } from 'react';
 import styles from './UsersTable.module.scss';
 import { UsersTableProps } from './UsersTable.interfaces';
 import { cx } from '@/utils';
 import { Table } from '@/ui';
 import img from '@/assets/icons/streamer-table-img.png';
-import { CellValue } from '@/ui/Table/Table.interfaces';
-
-function Cell(columnName: string | number, value: CellValue) {
-  if (columnName === 'Action') {
-    return <button className={cx(styles['unsubscribe-cell'])}>Unsubscribe</button>;
-  }
-
-  if (columnName === 'Streamer' || columnName === 'User') {
-    return (
-      <div className={cx(styles['streamer-cell'])}>
-        <img src={img} alt="img" />
-        <span className={cx(styles['streamer-cell-name'])}>{value}</span>
-      </div>
-    );
-  }
-
-  return value;
-}
+import { CellValue, TableRow } from '@/ui/Table/Table.interfaces';
+import { SubscribeModal } from '../SubscribeModal';
 
 function UsersTable({ data, columns, searchParams, sortedColumns }: UsersTableProps) {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [idToUnsubscribe, setIdToUnsubscribe] = useState<string | null>(null);
+
+  const handleUnsibscribe = (id: string | number) => {
+    setIdToUnsubscribe(() => id as string);
+    setIsModalOpen(() => true);
+  };
+
+  const handleCloseModal = () => {
+    setIdToUnsubscribe(() => null);
+    setIsModalOpen(() => false);
+  };
+
+  const cell = (columnName: string | number, value: CellValue, row: TableRow) => {
+    if (columnName === 'Action') {
+      return (
+        <button className={cx(styles['unsubscribe-cell'])} onClick={() => handleUnsibscribe(row.id)}>
+          Unsubscribe
+        </button>
+      );
+    }
+
+    if (columnName === 'Streamer' || columnName === 'User') {
+      return (
+        <div className={cx(styles['streamer-cell'])}>
+          <img src={img} alt="img" />
+          <span className={cx(styles['streamer-cell-name'])}>{value}</span>
+        </div>
+      );
+    }
+
+    return value;
+  };
+
   return (
     <div className={cx(styles.table)}>
       <Table
         rows={data}
         pagination={{ rowsPerPage: 10 }}
         columns={columns}
-        renderCell={Cell}
+        renderCell={cell}
         className={{
           headerCell: cx(styles['header-cell']),
           cell: cx(styles.cell),
@@ -37,6 +56,7 @@ function UsersTable({ data, columns, searchParams, sortedColumns }: UsersTablePr
         searchParams={{ ...searchParams, placeholder: 'Search transactions' }}
         sortedColumns={sortedColumns}
       />
+      {isModalOpen && <SubscribeModal type="unsubscribe" speakerId={idToUnsubscribe} onClose={handleCloseModal} />}
     </div>
   );
 }

@@ -1,5 +1,5 @@
-export interface WalletModalProps {
+export interface SubscribeModalProps {
   onClose: () => void;
-  speakerId?: string;
+  speakerId?: string | null;
   type: 'subscribe' | 'unsubscribe';
 }
