@@ -120,7 +120,7 @@ function Table({
                   <Row key={row.id}>
                     {columns.map((column: string) => (
                       <Cell key={column} className={className.cell}>
-                        {renderCell ? renderCell(column, row[column]) : row[column]}
+                        {renderCell ? renderCell(column, row[column], row) : row[column]}
                       </Cell>
                     ))}
                   </Row>

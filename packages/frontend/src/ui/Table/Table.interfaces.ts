@@ -10,7 +10,7 @@ export interface TableProps {
   sortedColumns?: string[];
   pagination?: Pagination;
   searchParams?: SearchParams;
-  renderCell?: (columnName: string | number, value: CellValue) => CellValue | JSX.Element;
+  renderCell?: (columnName: string | number, value: CellValue, row: TableRow) => CellValue | JSX.Element;
   renderHeaderCell?: (name: string | number) => CellValue;
   className: {
     headerCell: string;
