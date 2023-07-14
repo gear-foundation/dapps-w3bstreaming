@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 export interface TimePickerProps {
-  onChange?: (time: string | null) => void;
+  onChange?: (time: Moment) => void;
 }

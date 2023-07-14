@@ -1,3 +1,4 @@
+import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
@@ -24,8 +25,8 @@ function LayoutCreateForm() {
       title: '',
       description: '',
       dayDate: new Date(),
-      startTime: '',
-      endTime: '',
+      startTime: moment(),
+      endTime: moment(),
       imgLink: '',
     },
     validate: {
@@ -36,7 +37,7 @@ function LayoutCreateForm() {
 
   const { errors, getInputProps, setFieldValue, onSubmit, reset } = form;
 
-  const handleChangeDate = (field: 'dayDate' | 'startTime' | 'endTime', value: string | Date) => {
+  const handleChangeDate = (field: 'dayDate' | 'startTime' | 'endTime', value: Moment | Date) => {
     setFieldValue(field, value);
   };
 
@@ -46,15 +47,14 @@ function LayoutCreateForm() {
     const year = dayDate.getFullYear();
 
     const startDate = new Date(year, month, day);
-
-    startDate.setHours(Number(startTime.split(':')[0]));
-    startDate.setMinutes(Number(startTime.split(':')[1]));
+    startDate.setHours(startTime.hour());
+    startDate.setMinutes(startTime.minute());
     startDate.setSeconds(0);
     const startTimestamp = startDate.getTime();
 
     const endDate = new Date(year, month, day);
-    endDate.setHours(Number(endTime.split(':')[0]));
-    endDate.setMinutes(Number(endTime.split(':')[1]));
+    endDate.setHours(endTime.hour());
+    endDate.setMinutes(endTime.minute());
     endDate.setSeconds(0);
     const endTimestamp = endDate.getTime();
 
@@ -115,9 +115,9 @@ function LayoutCreateForm() {
             </Section>
             <Section title="Stream time">
               <div className={cx(styles['time-pickers-wrapper'])}>
-                <TimePicker onChange={(time: string | null) => handleChangeDate('startTime', time as string)} />
+                <TimePicker onChange={(time: Moment) => handleChangeDate('startTime', time)} />
                 -
-                <TimePicker onChange={(time: string | null) => handleChangeDate('endTime', time as string)} />
+                <TimePicker onChange={(time: Moment) => handleChangeDate('endTime', time)} />
               </div>
               <span className={cx(styles['field-error'])}>{errors.startTime}</span>
             </Section>

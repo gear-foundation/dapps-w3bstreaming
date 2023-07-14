@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { TimePicker as ReactTimePicker } from 'react-time-picker';
-import { Value } from 'react-time-picker/dist/cjs/shared/types';
+import moment, { Moment } from 'moment';
+import ReactTimePicker from 'rc-time-picker';
 import { cx } from '@/utils';
 import { TimePickerProps } from './TimePicker.interface';
+import SelectArrowSVG from '@/assets/icons/select-arrow.svg';
 import styles from './TimePicker.module.scss';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
+
+import 'rc-time-picker/assets/index.css';
 
 function TimePicker({ onChange }: TimePickerProps) {
-  const [value, setValue] = useState<Value>('12:00');
+  const [value, setValue] = useState<Moment>(moment('14:30', 'HH:mm'));
 
-  const handleChangeTime = (val: Value) => {
+  const handleChangeTime = (val: Moment) => {
     setValue(val);
     onChange?.(val);
   };
@@ -18,12 +19,16 @@ function TimePicker({ onChange }: TimePickerProps) {
   return (
     <div className={cx(styles.container)}>
       <ReactTimePicker
-        clockIcon={null}
-        clearIcon={null}
-        disableClock
-        onChange={handleChangeTime}
+        format="h:mm A"
+        showSecond={false}
         value={value}
+        clearIcon={<></>}
+        placement="bottomLeft"
+        minuteStep={5}
+        onChange={handleChangeTime}
+        inputIcon={<img src={SelectArrowSVG} alt="select time" className={cx(styles.select)} />}
         className={cx(styles.input)}
+        popupClassName={cx(styles.popup)}
       />
     </div>
   );
