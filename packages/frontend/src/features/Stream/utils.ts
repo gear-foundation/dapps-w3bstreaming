@@ -17,12 +17,14 @@ export class MediaStreamSequence {
   }
 
   removeByType(type: MediaTrackSequenceType) {
-    this.mediaTrackSequence.delete(type);
-    this.reindexAfter(type);
+    if (this.mediaTrackSequence.get(type)) {
+      const i = this.mediaTrackSequence.get(type);
+      this.mediaTrackSequence.delete(type);
+      this.reindexAfter(i as number);
+    }
   }
 
-  reindexAfter(removedType: MediaTrackSequenceType) {
-    const i = this.mediaTrackSequence.get(removedType) as number;
+  reindexAfter(i: number) {
     this.mediaTrackSequence.forEach((value, key) => {
       if (value > i) {
         this.mediaTrackSequence.set(key, value - 1);
