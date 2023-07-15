@@ -34,7 +34,7 @@ function StreamPage() {
             description={streamTeaser.description}
             startTime={new Date(Number(streamTeaser?.startTime?.replace(/,/g, '')) * 1000)}
             broadcasterInfo={users?.[streamTeaser.broadcaster]}
-            isUserSubscribed={users?.[account?.decodedAddress]?.subscribers?.includes(streamTeaser.broadcaster)}
+            isUserSubscribed={users?.[streamTeaser.broadcaster]?.subscribers?.includes(account?.decodedAddress)}
           />
         </>
       )}
