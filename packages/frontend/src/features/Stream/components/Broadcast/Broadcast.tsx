@@ -197,9 +197,8 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         if (camTransceiver.current?.sender.track) {
           camTransceiver.current.sender.track.enabled = true;
           commonStream.current.getTracks()[indexOfCamera].enabled = true;
-          setIsCameraBlocked(isBlocked);
+          setIsCameraBlocked(!isBlocked);
         }
-        setIsCameraBlocked(!isBlocked);
       }
 
       if (!isBlocked) {
