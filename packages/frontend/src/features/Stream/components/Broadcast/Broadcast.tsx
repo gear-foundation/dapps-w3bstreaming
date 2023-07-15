@@ -117,19 +117,21 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
         screenStream.getTracks()[0].onended = () => {
           //replacing screenSound and screenCapture remote tracks to null
-          scrAudioTransceiver.current?.stop();
-          scrCaptureTransceiver.current?.stop();
 
           const audInd = sequence.getIndex('screenSound');
-
           if (audInd) {
+            scrAudioTransceiver.current?.stop();
             commonStream.current.removeTrack(commonStream.current.getTracks()[audInd]);
             sequence.removeByType('screenSound');
+            scrCaptureTransceiver.current = null;
           }
+
           const capInd = sequence.getIndex('screenCapture');
           if (capInd) {
+            scrCaptureTransceiver.current?.stop();
             commonStream.current.removeTrack(commonStream.current.getTracks()[capInd]);
             sequence.removeByType('screenCapture');
+            scrCaptureTransceiver.current = null;
           }
 
           //replacing camera remote track to value
