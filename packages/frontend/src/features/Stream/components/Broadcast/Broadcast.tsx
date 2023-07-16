@@ -320,17 +320,19 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
     }
   };
 
-  // const handleStopStream = () => {
-  //   localStream?.getTracks().forEach((track) => track.stop());
-  //   peerConnection.current?.getSenders().forEach((sender) => {
-  //     peerConnection.current?.removeTrack(sender);
-  //   });
-  //   peerConnection.current?.close();
-  //   socket.emit('stopBroadcasting', account?.decodedAddress, {
-  //     streamId,
-  //   });
-  //   setStreamStatus('ended');
-  // };
+  const handleStopStream = () => {
+    localStream?.getTracks().forEach((track) => track.stop());
+    Object.keys(conns.current).forEach((id) => {
+      conns.current[id]?.getSenders().forEach((sender) => {
+        conns.current[id]?.removeTrack(sender);
+      });
+      conns.current[id]?.close();
+    });
+    socket.emit('stopBroadcasting', account?.decodedAddress, {
+      streamId,
+    });
+    setStreamStatus('ended');
+  };
 
   useEffect(() => {
     if (localVideo.current && localStream) {
@@ -357,7 +359,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         onSoundMute={handleMuteSound}
         isCameraBlocked={Boolean(streamType === 'camera' && isCameraBlocked)}
         onCameraBlock={handleBlockCamera}
-        // onStopStream={handleStopStream}
+        onStopStream={handleStopStream}
         isSharingScreen={streamType === 'screen'}
         onShareScreen={handleScreenShare}
       />
