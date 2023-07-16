@@ -16,7 +16,6 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const navigate = useNavigate();
 
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  // const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
   const commonStream: MutableRefObject<MediaStream> = useRef(new MediaStream());
   const mediaTrackSequence: MutableRefObject<MediaStreamSequence> = useRef(new MediaStreamSequence());
@@ -276,16 +275,18 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           }
         };
 
-        conns.current[idOfWatcher]!.createOffer()
-          .then((offer) => conns.current[idOfWatcher]?.setLocalDescription(offer))
-          .then(() =>
-            socket.emit('offer', account?.decodedAddress, {
-              description: conns.current[idOfWatcher]?.localDescription,
-              userId: idOfWatcher,
-              streamId: msg.streamId,
-              mediaSequence: mediaTrackSequence.current,
-            }),
-          );
+        conns.current[idOfWatcher]!.onnegotiationneeded = () => {
+          conns.current[idOfWatcher]!.createOffer()
+            .then((offer) => conns.current[idOfWatcher]?.setLocalDescription(offer))
+            .then(() =>
+              socket.emit('offer', account?.decodedAddress, {
+                description: conns.current[idOfWatcher]?.localDescription,
+                userId: idOfWatcher,
+                streamId: msg.streamId,
+                mediaSequence: mediaTrackSequence.current,
+              }),
+            );
+        };
       });
 
       socket.on('candidate', (idOfWatcher: string, msg: CandidateMsg) => {
@@ -296,19 +297,6 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
       socket.on('answer', (_: string, msg: AnswerMsg) => {
         conns.current[msg.watcherId]?.setRemoteDescription(msg.description);
-
-        conns.current[msg.watcherId]!.onnegotiationneeded = () => {
-          conns.current[msg.watcherId]!.createOffer()
-            .then((offer) => conns.current[msg.watcherId]!.setLocalDescription(offer))
-            .then(() =>
-              socket.emit('offer', account?.decodedAddress, {
-                description: conns.current[msg.watcherId]?.localDescription,
-                userId: msg.watcherId,
-                streamId,
-                mediaSequence: mediaTrackSequence.current,
-              }),
-            );
-        };
       });
     } catch (error) {
       if (
