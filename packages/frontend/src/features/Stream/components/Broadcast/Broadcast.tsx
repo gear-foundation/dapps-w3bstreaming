@@ -204,28 +204,21 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         video: devices.some((device) => device.kind === 'videoinput'),
         audio: devices.some((device) => device.kind === 'audioinput'),
       });
-      peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
       const sequence = mediaTrackSequence.current;
 
       const micTrack = requestedStream.getAudioTracks()?.[0];
+
       if (micTrack) {
         commonStream.current.addTrack(micTrack);
-        micTransceiver.current = peerConnection.current?.addTransceiver(micTrack, {
-          direction: 'sendonly',
-          streams: [commonStream.current],
-        });
         sequence.add('microphone');
       } else {
         setIsSoundMuted(true);
       }
 
       const camTrack = requestedStream.getVideoTracks()?.[0];
+
       if (camTrack) {
         commonStream.current.addTrack(camTrack);
-        camTransceiver.current = peerConnection.current?.addTransceiver(camTrack, {
-          direction: 'sendonly',
-          streams: [commonStream.current],
-        });
         sequence.add('camera');
       } else {
         setIsCameraBlocked(true);
@@ -236,7 +229,22 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       socket.emit('broadcast', account?.decodedAddress, { streamId });
 
       socket.on('watch', (idOfWatcher: string, msg: WatchMsg) => {
+        peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
         conns.current[idOfWatcher] = peerConnection.current as RTCPeerConnection;
+
+        if (micTrack) {
+          micTransceiver.current = peerConnection.current?.addTransceiver(micTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        }
+
+        if (camTrack) {
+          camTransceiver.current = peerConnection.current?.addTransceiver(camTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        }
 
         peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
           if (event.candidate) {
