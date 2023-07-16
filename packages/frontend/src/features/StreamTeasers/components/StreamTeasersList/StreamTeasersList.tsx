@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAtomValue } from 'jotai';
 import { Button, Dropdown, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
@@ -8,11 +9,12 @@ import { useStreamTeasersState } from '../../hooks';
 import { selectTeasersMenu } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
-import { useUsersState } from '@/features/Account/hooks';
+
+import { USERS_ATOM } from '@/atoms';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const { streamTeasers } = useStreamTeasersState();
-  const { users } = useUsersState();
+  const users = useAtomValue(USERS_ATOM);
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
   const [searchedValue, setSearchedValue] = useState<string>('');

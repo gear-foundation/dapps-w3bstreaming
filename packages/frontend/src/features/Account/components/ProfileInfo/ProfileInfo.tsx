@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
-import { FormValues, ProfileaInfoProps } from './ProfileInfo.interfaces';
+import { FormValues } from './ProfileInfo.interfaces';
 import { cx } from '@/utils';
 import { Button, DropzoneUploader, Input } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
-import { useEditProfileMessage, useUsersState } from '../../hooks';
-
+import { useEditProfileMessage } from '../../hooks';
 import { User } from '../../types';
+import { USERS_ATOM } from '@/atoms';
 
-function ProfileInfo(props: ProfileaInfoProps) {
+function ProfileInfo() {
   const { account } = useAccount();
-  const { users, isStateRead } = useUsersState();
+  const users = useAtomValue(USERS_ATOM);
   const sendMessage = useEditProfileMessage();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);

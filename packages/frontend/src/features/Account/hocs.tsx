@@ -1,45 +1,46 @@
 import { FC, useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
-import { Loader } from '@/components';
 import { SubscribersData, SubscriptionsData, UsersTableProps } from './components/UsersTable/UsersTable.interfaces';
-import { useUsersState } from './hooks';
 import { WithDataProps } from './types';
+import { USERS_ATOM } from '@/atoms';
+import { Loader } from '@/components';
 
-function withData(Component: FC<UsersTableProps>): (props: WithDataProps) => JSX.Element {
+function withData(
+  Component: FC<UsersTableProps>,
+  type: 'subscriptions' | 'subscribers',
+): (props: WithDataProps) => JSX.Element {
   return function Wrapped({ name, ...props }: WithDataProps) {
     const { account } = useAccount();
-    const { users, isStateRead } = useUsersState();
-    const [subsribersInfo, setSubsribersInfo] = useState<SubscribersData[]>([]);
-    const [subScriptionsInfo, setSubscriptionsInfo] = useState<SubscriptionsData[]>([]);
+    const users = useAtomValue(USERS_ATOM);
+    const [data, setData] = useState<SubscribersData[] | SubscriptionsData[]>([]);
+    const [some, setSome] = useState<boolean>(true);
 
     useEffect(() => {
+      setSome(true);
       if (account && users) {
-        const subcribersData =
-          users[account.decodedAddress]?.subscribers?.map((id: string) => ({
-            id,
-            User: users[id] ? `${users[id].name} ${users[id].surname}` : id,
-          })) || [];
-        const subscriptionsData =
-          users[account.decodedAddress]?.subscriptions?.map((user) => ({
+        if (type === 'subscriptions') {
+          const subscriptionsData = users[account.decodedAddress]?.subscriptions?.map((user) => ({
             id: user.accountId,
             Streamer: `${users[user.accountId].name} ${users[user.accountId].surname}`,
+            img: users[user.accountId].imgLink,
             'Date of next write-off': user.nextWriteOff,
-          })) || [];
-
-        setSubsribersInfo(subcribersData);
-        setSubscriptionsInfo(subscriptionsData);
+          }));
+          setData(subscriptionsData);
+        }
+        if (type === 'subscribers') {
+          const subcribersData = users[account.decodedAddress]?.subscribers?.map((id: string) => ({
+            id,
+            img: users[id].imgLink,
+            User: users[id].name || users[id].surname ? `${users[id].name} ${users[id].surname}` : id,
+          }));
+          setData(subcribersData);
+        }
       }
+      setSome(false);
     }, [account, users]);
 
-    return (
-      <>
-        {isStateRead ? (
-          <Component {...props} data={name === 'Subscribers' ? subsribersInfo : subScriptionsInfo} />
-        ) : (
-          <Loader />
-        )}
-      </>
-    );
+    return <>{some ? <Loader /> : <Component {...props} data={data} />}</>;
   };
 }
 

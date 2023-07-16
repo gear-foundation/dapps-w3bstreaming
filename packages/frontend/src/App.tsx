@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
@@ -10,12 +12,25 @@ import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';
+import { useProgramState } from './hooks';
+import { STREAM_TEASERS_ATOM, USERS_ATOM } from './atoms';
 
 function AppComponent() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
+  const { state, isStateRead } = useProgramState();
 
-  const isAppReady = isApiReady && isAccountReady;
+  const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
+  const setUsers = useSetAtom(USERS_ATOM);
+
+  useEffect(() => {
+    if (state && isStateRead) {
+      setStreamTeasers(state.streams);
+      setUsers(state.users);
+    }
+  }, [state, isStateRead, setStreamTeasers, setUsers]);
+
+  const isAppReady = isApiReady && isAccountReady && isStateRead;
 
   return (
     <div className={cx(styles['app-container'])}>

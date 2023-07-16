@@ -1,16 +1,7 @@
-import { useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useSendMessage } from '@gear-js/react-hooks';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ADDRESS } from '@/consts';
-import { UsersRes } from './types';
-import { useMetadata, useProgramMetadata } from '@/hooks';
-
-function useUsersState() {
-  const programId = ADDRESS.CONTRACT;
-  const meta = useProgramMetadata(metaTxt);
-  const { state, isStateRead } = useReadFullState(programId, meta);
-
-  return { users: (state as any)?.users as UsersRes, isStateRead };
-}
+import { useMetadata } from '@/hooks';
 
 function useEditProfileMetadata() {
   return useMetadata(metaTxt);
@@ -32,6 +23,4 @@ function useSubscribeToStreamMessage() {
   return useSendMessage(ADDRESS.CONTRACT, meta);
 }
 
-export { useSubscribeToStreamMessage };
-
-export { useUsersState, useEditProfileMessage };
+export { useSubscribeToStreamMessage, useEditProfileMessage };

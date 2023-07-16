@@ -1,6 +1,8 @@
 import { cx } from '@/utils';
 import styles from './StreamTeaser.module.scss';
 import streamDateIcon from '@/assets/icons/hexagon-icon.png';
+import noUserAvatarImg from '@/assets/icons/no-avatar-user-img.png';
+import noStreamPreviewImg from '@/assets/icons/no-stream-preview-img.png';
 import { StreamProps } from '../../types';
 
 function StreamTeaser({ title, startTime, description, imgLink, broadcasterInfo }: StreamProps) {
@@ -9,7 +11,7 @@ function StreamTeaser({ title, startTime, description, imgLink, broadcasterInfo 
   return (
     <div className={cx(styles.card)}>
       <div className={cx(styles['card-top'])}>
-        <img className={cx(styles['card-top-image'])} src={imgLink} alt="" />
+        <img className={cx(styles['card-top-image'])} src={imgLink || noStreamPreviewImg} alt="" />
         <div className={cx(styles['card-top-date-container'])}>
           <div className={cx(styles['card-top-date'])}>
             <img className={cx(styles['card-top-date-image'])} src={streamDateIcon} alt="" />
@@ -23,7 +25,11 @@ function StreamTeaser({ title, startTime, description, imgLink, broadcasterInfo 
         </div>
         <div className={cx(styles['card-top-speaker-container'])}>
           <div className={cx(styles['card-top-speaker'])}>
-            <img className={cx(styles['card-top-speaker-photo'])} src={broadcasterInfo?.imgLink} alt="speaker" />
+            <img
+              className={cx(styles['card-top-speaker-photo'])}
+              src={broadcasterInfo?.imgLink || noUserAvatarImg}
+              alt="speaker"
+            />
             <div className={cx(styles['card-top-speaker-content'])}>
               <span className={cx(styles['card-top-speaker-name'])}>
                 {broadcasterInfo?.name} {broadcasterInfo?.surname}

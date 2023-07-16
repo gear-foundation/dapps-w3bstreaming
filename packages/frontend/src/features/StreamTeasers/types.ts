@@ -19,17 +19,6 @@ export interface Streams {
   [key: string]: Stream;
 }
 
-export type StreamTeaserRes =
-  | string
-  | number
-  | boolean
-  | AnyJson[]
-  | {
-      [index: string]: AnyJson;
-    }
-  | null
-  | undefined;
-
 export interface FormattedTeaser {
   id: string;
   broadcaster: HexString;

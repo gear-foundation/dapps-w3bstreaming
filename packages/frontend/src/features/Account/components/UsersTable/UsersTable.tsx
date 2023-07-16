@@ -3,7 +3,7 @@ import styles from './UsersTable.module.scss';
 import { UsersTableProps } from './UsersTable.interfaces';
 import { cx } from '@/utils';
 import { Table } from '@/ui';
-import img from '@/assets/icons/streamer-table-img.png';
+import img from '@/assets/icons/no-avatar-user-img.png';
 import { CellValue, TableRow } from '@/ui/Table/Table.interfaces';
 import { SubscribeModal } from '../SubscribeModal';
 
@@ -33,7 +33,7 @@ function UsersTable({ data, columns, searchParams, sortedColumns }: UsersTablePr
     if (columnName === 'Streamer' || columnName === 'User') {
       return (
         <div className={cx(styles['streamer-cell'])}>
-          <img src={img} alt="img" />
+          <img src={(row.img as string) || img} alt="img" className={cx(styles['user-image'])} />
           <span className={cx(styles['streamer-cell-name'])}>{value}</span>
         </div>
       );

@@ -1,11 +1,12 @@
 import { useEffect, useState, MutableRefObject, RefObject, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProgramMetadata, getProgramMetadata } from '@gear-js/api';
-import { useAlert } from '@gear-js/react-hooks';
+import { useAlert, useReadFullState } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { useAtom } from 'jotai';
-import { LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
-import { Handler } from '@/types';
+import metaTxt from '@/assets/meta/meta.txt';
+import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
+import { Handler, ProgramStateRes } from '@/types';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 
 function useProgramMetadata(source: string) {
@@ -106,4 +107,12 @@ function useMediaQuery(width: number) {
   return targetReached;
 }
 
-export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMetadata, useMediaQuery };
+function useProgramState() {
+  const programId = ADDRESS.CONTRACT;
+  const meta = useProgramMetadata(metaTxt);
+  const state: ProgramStateRes = useReadFullState(programId, meta);
+
+  return state;
+}
+
+export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMetadata, useMediaQuery, useProgramState };
