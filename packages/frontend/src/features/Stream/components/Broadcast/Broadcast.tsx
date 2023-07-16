@@ -16,15 +16,15 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const navigate = useNavigate();
 
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
+  // const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
   const commonStream: MutableRefObject<MediaStream> = useRef(new MediaStream());
   const mediaTrackSequence: MutableRefObject<MediaStreamSequence> = useRef(new MediaStreamSequence());
 
-  const micTransceiver: MutableRefObject<RTCRtpTransceiver | null> = useRef(null);
-  const camTransceiver: MutableRefObject<RTCRtpTransceiver | null> = useRef(null);
-  const scrCaptureTransceiver: MutableRefObject<RTCRtpTransceiver | null> = useRef(null);
-  const scrAudioTransceiver: MutableRefObject<RTCRtpTransceiver | null> = useRef(null);
+  const micTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const camTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const scrCaptureTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const scrAudioTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false);
@@ -56,23 +56,26 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         //replaces camera remote track to null
         const indexOfCameraTrack = sequence.getIndex('camera');
         if (indexOfCameraTrack !== undefined) {
-          if (camTransceiver.current?.sender.track) {
-            camTransceiver.current.stop();
-            commonStream.current.getTracks()[indexOfCameraTrack].enabled = false;
-          }
+          Object.keys(conns.current).forEach((id) => {
+            if (camTransceiver.current[id]) {
+              camTransceiver.current[id]?.stop();
+            }
+          });
+          commonStream.current.getTracks()[indexOfCameraTrack].enabled = false;
         }
 
         //adds or replaces screenSound remote tracks to value
         const requestedScreenAudioTrack = screenStream.getAudioTracks()?.[0];
         const indexOfExistingScreenAudioTrack = sequence.getIndex('screenSound');
 
-        if (indexOfExistingScreenAudioTrack === undefined && requestedScreenAudioTrack && peerConnection.current) {
+        if (indexOfExistingScreenAudioTrack === undefined && requestedScreenAudioTrack) {
           sequence.add('screenSound');
           commonStream.current.addTrack(requestedScreenAudioTrack);
-          // peerConnection.current!.addTrack(requestedScreenAudioTrack, currentCommonStream);
-          scrAudioTransceiver.current = peerConnection.current?.addTransceiver(requestedScreenAudioTrack, {
-            direction: 'sendonly',
-            streams: [commonStream.current],
+          Object.keys(conns.current).forEach((id) => {
+            scrAudioTransceiver.current[id] = conns.current[id]?.addTransceiver(requestedScreenAudioTrack, {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            });
           });
         }
 
@@ -80,12 +83,14 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         const requestedScreenCaptureTrack = screenStream.getVideoTracks()?.[0];
         const indexOfExistingScreenCaptureTrack = sequence.getIndex('screenCapture');
 
-        if (indexOfExistingScreenCaptureTrack === undefined && requestedScreenCaptureTrack && peerConnection.current) {
+        if (indexOfExistingScreenCaptureTrack === undefined && requestedScreenCaptureTrack) {
           sequence.add('screenCapture');
           commonStream.current.addTrack(requestedScreenCaptureTrack);
-          scrCaptureTransceiver.current = peerConnection.current?.addTransceiver(requestedScreenCaptureTrack, {
-            direction: 'sendonly',
-            streams: [commonStream.current],
+          Object.keys(conns.current).forEach((id) => {
+            scrCaptureTransceiver.current[id] = conns.current[id]?.addTransceiver(requestedScreenCaptureTrack, {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            });
           });
         }
 
@@ -101,32 +106,36 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
           const audInd = sequence.getIndex('screenSound');
           if (audInd) {
-            scrAudioTransceiver.current?.stop();
+            Object.keys(conns.current).forEach((id) => {
+              scrAudioTransceiver.current[id]?.stop();
+              scrAudioTransceiver.current[id] = null;
+            });
             commonStream.current.removeTrack(commonStream.current.getTracks()[audInd]);
             sequence.removeByType('screenSound');
-            scrCaptureTransceiver.current = null;
           }
 
           const capInd = sequence.getIndex('screenCapture');
           if (capInd) {
-            scrCaptureTransceiver.current?.stop();
+            Object.keys(conns.current).forEach((id) => {
+              scrCaptureTransceiver.current[id]?.stop();
+              scrCaptureTransceiver.current[id] = null;
+            });
             commonStream.current.removeTrack(commonStream.current.getTracks()[capInd]);
             sequence.removeByType('screenCapture');
-            scrCaptureTransceiver.current = null;
           }
 
           //replacing camera remote track to value
           if (indexOfCameraTrack) {
-            if (camTransceiver.current?.sender.track && peerConnection.current) {
-              commonStream.current.getTracks()[indexOfCameraTrack].enabled = true;
-              camTransceiver.current = peerConnection.current.addTransceiver(
+            commonStream.current.getTracks()[indexOfCameraTrack].enabled = true;
+            Object.keys(conns.current).forEach((id) => {
+              camTransceiver.current[id] = conns.current[id].addTransceiver(
                 commonStream.current.getTracks()[indexOfCameraTrack].clone(),
                 {
                   direction: 'sendonly',
                   streams: [commonStream.current],
                 },
               );
-            }
+            });
           }
 
           const newRequiredIndexes = sequence.getIndexes(['microphone', 'camera']);
@@ -148,20 +157,28 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
     if (isMuted) {
       if (indexOfMicrophone !== undefined) {
-        if (micTransceiver.current?.sender.track) {
-          micTransceiver.current.sender.track.enabled = true;
-          commonStream.current.getTracks()[indexOfMicrophone].enabled = true;
-          setIsSoundMuted(() => false);
-        }
+        Object.keys(conns.current).forEach((id) => {
+          const transceiver = micTransceiver.current[id];
+
+          if (transceiver?.sender.track) {
+            transceiver.sender.track.enabled = true;
+          }
+        });
+        commonStream.current.getTracks()[indexOfMicrophone].enabled = true;
+        setIsSoundMuted(() => false);
       }
     }
     if (!isMuted) {
       if (indexOfMicrophone !== undefined) {
-        if (micTransceiver.current?.sender.track) {
-          micTransceiver.current.sender.track.enabled = false;
-          commonStream.current.getTracks()[indexOfMicrophone].enabled = false;
-          setIsSoundMuted(() => true);
-        }
+        Object.keys(conns.current).forEach((id) => {
+          const transceiver = micTransceiver.current[id];
+
+          if (transceiver?.sender.track) {
+            transceiver.sender.track.enabled = false;
+          }
+        });
+        commonStream.current.getTracks()[indexOfMicrophone].enabled = false;
+        setIsSoundMuted(() => true);
       }
     }
   };
@@ -173,24 +190,32 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
       if (isBlocked) {
         if (indexOfCamera !== undefined) {
-          if (camTransceiver.current?.sender.track) {
-            camTransceiver.current.sender.track.enabled = true;
-            commonStream.current.getTracks()[indexOfCamera].enabled = true;
-          }
+          Object.keys(conns.current).forEach((id) => {
+            const transceiver = camTransceiver.current[id];
+
+            if (transceiver?.sender.track) {
+              transceiver.sender.track.enabled = true;
+            }
+          });
+          commonStream.current.getTracks()[indexOfCamera].enabled = true;
         }
       }
 
       if (!isBlocked) {
         if (indexOfCamera !== undefined) {
-          if (camTransceiver.current?.sender.track) {
-            camTransceiver.current.sender.track.enabled = false;
-            commonStream.current.getTracks()[indexOfCamera].enabled = false;
-          }
+          Object.keys(conns.current).forEach((id) => {
+            const transceiver = camTransceiver.current[id];
+
+            if (transceiver?.sender.track) {
+              transceiver.sender.track.enabled = false;
+            }
+          });
+          commonStream.current.getTracks()[indexOfCamera].enabled = false;
         }
       }
-    }
 
-    setIsCameraBlocked((prev) => !prev);
+      setIsCameraBlocked((prev) => !prev);
+    }
   };
 
   const startStream = async () => {
@@ -204,28 +229,21 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         video: devices.some((device) => device.kind === 'videoinput'),
         audio: devices.some((device) => device.kind === 'audioinput'),
       });
-      peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
       const sequence = mediaTrackSequence.current;
 
       const micTrack = requestedStream.getAudioTracks()?.[0];
+
       if (micTrack) {
         commonStream.current.addTrack(micTrack);
-        micTransceiver.current = peerConnection.current?.addTransceiver(micTrack, {
-          direction: 'sendonly',
-          streams: [commonStream.current],
-        });
         sequence.add('microphone');
       } else {
         setIsSoundMuted(true);
       }
 
       const camTrack = requestedStream.getVideoTracks()?.[0];
+
       if (camTrack) {
         commonStream.current.addTrack(camTrack);
-        camTransceiver.current = peerConnection.current?.addTransceiver(camTrack, {
-          direction: 'sendonly',
-          streams: [commonStream.current],
-        });
         sequence.add('camera');
       } else {
         setIsCameraBlocked(true);
@@ -236,20 +254,33 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       socket.emit('broadcast', account?.decodedAddress, { streamId });
 
       socket.on('watch', (idOfWatcher: string, msg: WatchMsg) => {
-        conns.current[idOfWatcher] = peerConnection.current as RTCPeerConnection;
+        conns.current[idOfWatcher] = new RTCPeerConnection(RTC_CONFIG);
 
-        peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+        if (micTrack) {
+          micTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(micTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        }
+
+        if (camTrack) {
+          camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(camTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        }
+
+        conns.current[idOfWatcher]!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
           if (event.candidate) {
             socket.emit('candidate', idOfWatcher, { id: account.address, candidate: event.candidate });
           }
         };
 
-        peerConnection
-          .current!.createOffer()
-          .then((offer) => peerConnection.current?.setLocalDescription(offer))
+        conns.current[idOfWatcher]!.createOffer()
+          .then((offer) => conns.current[idOfWatcher]?.setLocalDescription(offer))
           .then(() =>
             socket.emit('offer', account?.decodedAddress, {
-              description: peerConnection.current?.localDescription,
+              description: conns.current[idOfWatcher]?.localDescription,
               userId: idOfWatcher,
               streamId: msg.streamId,
               mediaSequence: mediaTrackSequence.current,
@@ -266,14 +297,15 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       socket.on('answer', (_: string, msg: AnswerMsg) => {
         conns.current[msg.watcherId]?.setRemoteDescription(msg.description);
 
-        peerConnection.current!.onnegotiationneeded = () => {
-          peerConnection
-            .current!.createOffer()
-            .then((offer) => peerConnection.current!.setLocalDescription(offer))
+        conns.current[msg.watcherId]!.onnegotiationneeded = () => {
+          conns.current[msg.watcherId]!.createOffer()
+            .then((offer) => conns.current[msg.watcherId]!.setLocalDescription(offer))
             .then(() =>
-              socket.emit('updateOffers', account?.decodedAddress, {
-                description: peerConnection.current?.localDescription,
+              socket.emit('offer', account?.decodedAddress, {
+                description: conns.current[msg.watcherId]?.localDescription,
+                userId: msg.watcherId,
                 streamId,
+                mediaSequence: mediaTrackSequence.current,
               }),
             );
         };
@@ -290,10 +322,12 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   const handleStopStream = () => {
     localStream?.getTracks().forEach((track) => track.stop());
-    peerConnection.current?.getSenders().forEach((sender) => {
-      peerConnection.current?.removeTrack(sender);
+    Object.keys(conns.current).forEach((id) => {
+      conns.current[id]?.getSenders().forEach((sender) => {
+        conns.current[id]?.removeTrack(sender);
+      });
+      conns.current[id]?.close();
     });
-    peerConnection.current?.close();
     socket.emit('stopBroadcasting', account?.decodedAddress, {
       streamId,
     });
