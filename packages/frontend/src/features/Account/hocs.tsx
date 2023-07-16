@@ -20,20 +20,22 @@ function withData(
       setSome(true);
       if (account && users) {
         if (type === 'subscriptions') {
-          const subscriptionsData = users[account.decodedAddress]?.subscriptions?.map((user) => ({
-            id: user.accountId,
-            Streamer: `${users[user.accountId].name} ${users[user.accountId].surname}`,
-            img: users[user.accountId].imgLink,
-            'Date of next write-off': user.nextWriteOff,
-          }));
+          const subscriptionsData =
+            users[account.decodedAddress]?.subscriptions?.map((user) => ({
+              id: user.accountId,
+              Streamer: `${users[user.accountId].name} ${users[user.accountId].surname}`,
+              img: users[user.accountId].imgLink,
+              'Date of next write-off': user.nextWriteOff,
+            })) || [];
           setData(subscriptionsData);
         }
         if (type === 'subscribers') {
-          const subcribersData = users[account.decodedAddress]?.subscribers?.map((id: string) => ({
-            id,
-            img: users[id].imgLink,
-            User: users[id].name || users[id].surname ? `${users[id].name} ${users[id].surname}` : id,
-          }));
+          const subcribersData =
+            users[account.decodedAddress]?.subscribers?.map((id: string) => ({
+              id,
+              img: users[id].imgLink,
+              User: users[id].name || users[id].surname ? `${users[id].name} ${users[id].surname}` : id,
+            })) || [];
           setData(subcribersData);
         }
       }
