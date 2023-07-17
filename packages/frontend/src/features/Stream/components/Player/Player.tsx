@@ -42,8 +42,8 @@ function Player({
     player!.volume = volume / 100;
   }, [volume]);
 
-  const handlePause = () => {
-    if (isOnPause) {
+  const handlePause = async () => {
+    if (isOnPause && playerRef.current?.paused) {
       playerRef.current?.play();
       setIsOnPause(false);
     } else {
@@ -74,6 +74,14 @@ function Player({
     }
   };
 
+  const handleOnPause = () => {
+    setIsOnPause(true);
+  };
+
+  const handleOnPlaying = () => {
+    setIsOnPause(false);
+  };
+
   return (
     <div className={cx(styles['player-container'])}>
       <video
@@ -81,6 +89,8 @@ function Player({
         controls={false}
         preload="auto"
         muted={mode === 'broadcast'}
+        onPause={handleOnPause}
+        onPlaying={handleOnPlaying}
         ref={playerRef}
         id="audio"
         playsInline
