@@ -82,8 +82,8 @@ function Header({ menu }: HeaderProps) {
                   <div className={cx(styles['wallet-info'])}>
                     <div className={cx(styles.balance)}>
                       <img src={coin} alt="wara coin" className={cx(styles['balance-coin-image'])} />
-                      <div className={cx(styles['balance-value'])}>{Number(account?.balance.value).toFixed(2)}</div>
-                      <div className={cx(styles['balance-currency-name'])}>Vara</div>
+                      <div className={cx(styles['balance-value'])}>{account.balance.value}</div>
+                      <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
                     </div>
                     <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
                       {address && (

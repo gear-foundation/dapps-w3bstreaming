@@ -1279,10 +1279,10 @@
   resolved "https://registry.npmjs.org/@gear-js/api/-/api-0.32.3.tgz"
   integrity sha512-VbGYxvw/g0ezCUKHd24eJ5t/pXW+vgHyxp24zHIT2AaClLwNW9Tv09vPC18/qDe7LQ2WGGi157G5VTD+G+lOgg==
 
-"@gear-js/react-hooks@0.5.24":
-  version "0.5.24"
-  resolved "https://registry.npmjs.org/@gear-js/react-hooks/-/react-hooks-0.5.24.tgz"
-  integrity sha512-yyXGbCXUDXAVSSGjmrhrePJPTuleJSfslxYiOjxFiLYZwESfJ+kEQDJM52M1qtSnimzii+6Maae9qZ/bcj22Zw==
+"@gear-js/react-hooks@0.5.25":
+  version "0.5.25"
+  resolved "https://registry.npmjs.org/@gear-js/react-hooks/-/react-hooks-0.5.25.tgz"
+  integrity sha512-9Ks7Zd+fly0SIOsbswv5FEVw2SN5ihpsjHobG2emUq8Wm1zyglRQjN8z4x3tnDTKWFWi//fulf7RWf5KGyj9Yg==
 
 "@gear-js/ui@^0.5.19":
   version "0.5.19"
@@ -7200,12 +7200,10 @@ fresh@0.5.2:
     react-datepicker "^4.15.0"
     react-dom "^18.2.0"
     react-dropzone "^14.2.3"
-    react-ios-time-picker "^0.2.2"
     react-router "^6.11.1"
     react-router-dom "^6.11.1"
     react-scripts "5.0.1"
     react-time-picker "^6.2.0"
-    react-timeit "^1.2.12"
     react-webcam "^7.0.1"
     sass "1.62.0"
     socket.io "^4.6.1"

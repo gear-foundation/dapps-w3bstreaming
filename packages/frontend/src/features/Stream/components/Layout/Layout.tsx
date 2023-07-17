@@ -84,10 +84,12 @@ function Layout({
       </div>
       <div className={cx(styles.right)}>
         <div className={cx(styles['views-and-time'])}>
-          <div className={cx(styles.views)}>
-            <img src={eyeSVG} alt="views" />
-            <span>{connectionsCount}</span>
-          </div>
+          {isStreamGoing && (
+            <div className={cx(styles.views)}>
+              <img src={eyeSVG} alt="views" />
+              <span>{connectionsCount}</span>
+            </div>
+          )}
           <div className={cx(styles.time)}>
             <img src={timerSVG} alt="time" />
             <span>
