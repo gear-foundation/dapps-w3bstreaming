@@ -8,8 +8,8 @@ import styles from './TimePicker.module.scss';
 
 import 'rc-time-picker/assets/index.css';
 
-function TimePicker({ onChange }: TimePickerProps) {
-  const [value, setValue] = useState<Moment>(moment('14:30', 'HH:mm'));
+function TimePicker({ onChange, ...props }: TimePickerProps) {
+  const [value, setValue] = useState<Moment>(moment());
 
   const handleChangeTime = (val: Moment) => {
     setValue(val);
@@ -29,6 +29,7 @@ function TimePicker({ onChange }: TimePickerProps) {
         inputIcon={<img src={SelectArrowSVG} alt="select time" className={cx(styles.select)} />}
         className={cx(styles.input)}
         popupClassName={cx(styles.popup)}
+        {...props}
       />
     </div>
   );

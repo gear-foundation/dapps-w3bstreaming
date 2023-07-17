@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
@@ -31,11 +32,13 @@ function LayoutCreateForm() {
     },
     validate: {
       title: isNotEmpty('Stream title is required'),
-      startTime: (value, values) => (value === values.endTime ? 'Start time shouldnt be equal to End time' : null),
+      startTime: (value, values) => (value.isSame(values.endTime) ? 'Start time shouldnt be equal to End time' : null),
+      endTime: (value, values) =>
+        value.isBefore(values.startTime) ? `Start time shouldn't be less than End time` : null,
     },
   });
 
-  const { errors, getInputProps, setFieldValue, onSubmit, reset } = form;
+  const { errors, getInputProps, setFieldValue, onSubmit, reset, values } = form;
 
   const handleChangeDate = (field: 'dayDate' | 'startTime' | 'endTime', value: Moment | Date) => {
     setFieldValue(field, value);
@@ -82,6 +85,28 @@ function LayoutCreateForm() {
     setFieldValue('imgLink', preview);
   };
 
+  const handleTimePickerDisabledHours = useCallback(() => {
+    const now = moment();
+    if (moment(values.dayDate).isSame(now, 'day')) {
+      const end = now.hour();
+      return [...Array(end).keys()];
+    }
+    return [];
+  }, [values.dayDate]);
+
+  const handleTimePickerDisabledMinutes = useCallback(
+    (hour: number) => {
+      const now = moment();
+      if (hour === moment().hour() && moment(values.dayDate).isSame(now, 'day')) {
+        const end = moment().minutes();
+        return [...Array(end).keys()];
+      }
+
+      return [];
+    },
+    [values.dayDate],
+  );
+
   return (
     <div className={cx(styles.layout)}>
       <h1 className={cx(styles.title)}>Create stream</h1>
@@ -115,11 +140,20 @@ function LayoutCreateForm() {
             </Section>
             <Section title="Stream time">
               <div className={cx(styles['time-pickers-wrapper'])}>
-                <TimePicker onChange={(time: Moment) => handleChangeDate('startTime', time)} />
+                <TimePicker
+                  disabledHours={handleTimePickerDisabledHours}
+                  disabledMinutes={handleTimePickerDisabledMinutes}
+                  onChange={(time: Moment) => handleChangeDate('startTime', time)}
+                />
                 -
-                <TimePicker onChange={(time: Moment) => handleChangeDate('endTime', time)} />
+                <TimePicker
+                  disabledHours={handleTimePickerDisabledHours}
+                  disabledMinutes={handleTimePickerDisabledMinutes}
+                  onChange={(time: Moment) => handleChangeDate('endTime', time)}
+                />
               </div>
               <span className={cx(styles['field-error'])}>{errors.startTime}</span>
+              <span className={cx(styles['field-error'])}>{errors.endTime}</span>
             </Section>
           </div>
         </div>
