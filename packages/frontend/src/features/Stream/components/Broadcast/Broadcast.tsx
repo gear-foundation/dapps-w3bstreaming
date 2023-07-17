@@ -339,9 +339,6 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const handleStopStream = () => {
     localStream?.getTracks().forEach((track) => track.stop());
     Object.keys(conns.current).forEach((id) => {
-      conns.current[id]?.getSenders().forEach((sender) => {
-        conns.current[id]?.removeTrack(sender);
-      });
       conns.current[id]?.close();
     });
     socket.emit('stopBroadcasting', account?.decodedAddress, {
