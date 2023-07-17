@@ -9,6 +9,7 @@ import { Button, DropzoneUploader, Input } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
+import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
 import { useEditProfileMessage } from '../../hooks';
 import { User } from '../../types';
 import { USERS_ATOM } from '@/atoms';
@@ -93,7 +94,7 @@ function ProfileInfo() {
     <div className={cx(styles['profile-info'])}>
       {userInfo && !isEditingProfile ? (
         <>
-          <img src={userInfo?.imgLink} alt="profile" className={cx(styles['profile-info-image'])} />
+          <img src={userInfo?.imgLink || defaultUserImg} alt="profile" className={cx(styles['profile-info-image'])} />
           <p className={cx(styles['profile-info-name'])}>
             {userInfo?.name} {userInfo?.surname}
           </p>
