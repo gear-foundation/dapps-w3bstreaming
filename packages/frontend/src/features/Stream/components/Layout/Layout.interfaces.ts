@@ -8,4 +8,5 @@ export interface LayoutProps {
   startTime: Date;
   broadcasterInfo: User;
   isUserSubscribed: boolean;
+  streamId?: string;
 }

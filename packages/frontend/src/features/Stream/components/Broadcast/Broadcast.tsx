@@ -262,11 +262,39 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           });
         }
 
-        if (camTrack) {
-          camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(camTrack, {
-            direction: 'sendonly',
-            streams: [commonStream.current],
-          });
+        const camIndex = sequence.getIndex('camera');
+
+        if (camTrack && camIndex !== undefined) {
+          if (commonStream.current.getTracks()[camIndex].enabled) {
+            camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(camTrack, {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            });
+          }
+        }
+
+        const scrSoundIndex = sequence.getIndex('screenSound');
+
+        if (scrSoundIndex !== undefined) {
+          scrAudioTransceiver.current[idOfWatcher] = conns.current[idOfWatcher].addTransceiver(
+            commonStream.current.getTracks()[scrSoundIndex].clone(),
+            {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            },
+          );
+        }
+
+        const scrCaptureIndex = sequence.getIndex('screenCapture');
+
+        if (scrCaptureIndex !== undefined) {
+          scrAudioTransceiver.current[idOfWatcher] = conns.current[idOfWatcher].addTransceiver(
+            commonStream.current.getTracks()[scrCaptureIndex].clone(),
+            {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            },
+          );
         }
 
         conns.current[idOfWatcher]!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
@@ -320,6 +348,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       streamId,
     });
     setStreamStatus('ended');
+    socket.off();
   };
 
   useEffect(() => {
@@ -333,6 +362,33 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         .catch((err) => console.log(err));
     }
   }, [localStream]);
+
+  useEffect(() => {
+    socket.on('stopWatching', (id) => {
+      camTransceiver.current?.[id]?.stop();
+      delete camTransceiver.current?.[id];
+
+      micTransceiver.current?.[id]?.stop();
+      delete micTransceiver.current?.[id];
+
+      scrAudioTransceiver.current?.[id]?.stop();
+      delete scrAudioTransceiver.current?.[id];
+
+      scrCaptureTransceiver.current?.[id]?.stop();
+      delete scrCaptureTransceiver.current?.[id];
+
+      conns.current?.[id]?.close();
+      delete conns.current?.[id];
+    });
+  }, [socket]);
+
+  useEffect(
+    () => () => {
+      handleStopStream();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const handlePlayerReady = (player: HTMLVideoElement) => {
     localVideo.current = player;

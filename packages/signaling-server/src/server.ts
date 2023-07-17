@@ -12,7 +12,8 @@ import {
   IOfferMsg,
   IStopBroadcastingMsg,
   IWatchMsg,
-  IUpdateOffersMsg,
+  IStopWatchingMsg,
+  GetInfoForUserMsg,
 } from 'types';
 
 const app = express();
@@ -50,11 +51,23 @@ io.on('connection', socket => {
       connectionsPerStream.set(msg.streamId, { count: 0, broadcasterId: '' });
     }
     connectionsPerStream.get(msg.streamId)!.broadcasterId = id;
+
+    for (let connection of connections.keys()) {
+      connections
+        .get(connection)!
+        .emit('isStreaming', !!streams.get(msg.streamId));
+    }
   });
 
   socket.on('watch', async (id: string, msg: IWatchMsg) => {
     if (!isValidSig(msg.encodedId, msg.signedMsg)) {
       return socket.emit('error', { message: `Signature isn't valid` });
+    }
+
+    if (!streams.has(msg.streamId)) {
+      return socket.emit('error', {
+        message: `Stream with id ${msg.streamId} hasn't started yet`,
+      });
     }
 
     const broadcasterId = streams.get(msg.streamId) as string;
@@ -65,37 +78,44 @@ io.on('connection', socket => {
       });
     }
 
-    if (!streams.has(msg.streamId)) {
-      return socket.emit('error', {
-        message: `Stream with id ${msg.streamId} hasn't started yet`,
-      });
-    }
-
     connections.get(broadcasterId)?.emit('watch', id, msg);
 
     connections.set(id, socket);
 
     connectionsPerStream.get(msg.streamId)!.count++;
 
-    connections
-      .get(connectionsPerStream.get(msg.streamId)!.broadcasterId)!
-      .emit('viewersCount', connectionsPerStream.get(msg.streamId)!.count);
-
     for (let connection of connections.keys()) {
       connections
         .get(connection)!
-        .emit('viewersCount', connectionsPerStream.get(msg.streamId)!.count);
+        .emit('watchersCount', connectionsPerStream.get(msg.streamId)!.count);
+
+      connections
+        .get(connection)!
+        .emit('isStreaming', !!streams.get(msg.streamId));
     }
   });
 
-  socket.on('stopBroadcasting', (_, msg: IStopBroadcastingMsg) => {
+  socket.on('stopBroadcasting', (broadcasterId, msg: IStopBroadcastingMsg) => {
     if (streams.has(msg.streamId)) {
+      for (let connection of connections.keys()) {
+        connections.get(connection)!.emit('isStreaming', false);
+        if (connection !== broadcasterId) {
+          connections.get(connection)!.emit('stopBroadcasting', broadcasterId, {
+            streamId: msg.streamId,
+            watcherId: connection,
+          });
+        }
+      }
+
       connections.delete(streams.get(msg.streamId)!);
+      connectionsPerStream.delete(msg.streamId);
+      streams.delete(msg.streamId);
     }
   });
 
   socket.on('offer', (id, msg: IOfferMsg) => {
     if (connections.has(msg.userId)) {
+      console.log(msg.userId);
       connections.get(msg.userId)!.emit('offer', id, msg);
     }
   });
@@ -112,15 +132,38 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('updateOffers', (broadcasterId, msg: IUpdateOffersMsg) => {
-    for (let connection of connections.keys()) {
-      if (connection !== broadcasterId) {
-        connections.get(connection)!.emit('offer', broadcasterId, {
-          ...msg,
-          userId: connection,
-        });
+  socket.on('stopWatching', (id, msg: IStopWatchingMsg) => {
+    if (streams.get(msg.streamId)) {
+      const broadcasterId = streams.get(msg.streamId) as string;
+
+      connections.get(broadcasterId)?.emit('stopWatching', id, msg);
+      connections.delete(id);
+    }
+    if (
+      connectionsPerStream.get(msg.streamId) &&
+      connectionsPerStream.get(msg.streamId)!.count > 0
+    ) {
+      connectionsPerStream.get(msg.streamId)!.count--;
+
+      for (let connection of connections.keys()) {
+        connections
+          .get(connection)!
+          .emit('watchersCount', connectionsPerStream.get(msg.streamId)!.count);
       }
     }
+  });
+
+  socket.on('getWatchersCount', (id, msg: GetInfoForUserMsg) => {
+    if (connectionsPerStream.get(msg.streamId)) {
+      socket.emit(
+        'watchersCount',
+        connectionsPerStream.get(msg.streamId)!.count
+      );
+    }
+  });
+
+  socket.on('getIsStreaming', (id, msg: GetInfoForUserMsg) => {
+    socket.emit('isStreaming', !!streams.get(msg.streamId));
   });
 
   socket.on('disconnect', r => {

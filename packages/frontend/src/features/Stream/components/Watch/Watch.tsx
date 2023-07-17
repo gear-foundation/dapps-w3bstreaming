@@ -1,4 +1,5 @@
 import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
@@ -12,6 +13,7 @@ import { RTC_CONFIG } from '../../config';
 import { Button } from '@/ui';
 
 function Watch({ socket, streamId }: WatchProps) {
+  const navigate = useNavigate();
   const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
@@ -21,19 +23,16 @@ function Watch({ socket, streamId }: WatchProps) {
   const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
 
   const handlePlayStream = useCallback(() => {
-    if (!account?.decodedAddress || !publicKey?.signature || !streamId) {
+    if (!account?.decodedAddress || !publicKey?.signature || !streamId || !socket) {
       return;
     }
-
     setStreamStatus('loading');
     socket.emit('watch', account?.decodedAddress, {
       streamId,
       signedMsg: publicKey?.signature,
       encodedId: account.address,
     });
-
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
-
     socket.on('offer', (broadcasterAddress: string, msg: OfferMsg) => {
       peerConnection.current
         ?.setRemoteDescription(msg.description)
@@ -92,13 +91,25 @@ function Watch({ socket, streamId }: WatchProps) {
     socket.on('candidate', (_: string, msg: CandidateMsg) => {
       peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
     });
+
+    socket.on('stopBroadcasting', (broadcasterId, msg) => {
+      setStreamStatus('ended');
+      peerConnection.current?.close();
+      peerConnection.current = null;
+      socket.off();
+    });
   }, [account?.address, account?.decodedAddress, publicKey?.signature, socket, streamId]);
 
   useEffect(
     () => () => {
-      socket.emit('stopWatching', { streamId });
+      console.log('ffff');
+      socket.emit('stopWatching', account?.decodedAddress, { streamId });
+      peerConnection.current?.close();
+      peerConnection.current = null;
+      socket.off();
     },
-    [socket, streamId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [streamId],
   );
 
   useEffect(() => {
@@ -151,6 +162,10 @@ function Watch({ socket, streamId }: WatchProps) {
     remoteVideo.current = player;
   };
 
+  const handleGoToStreams = () => {
+    navigate('/account');
+  };
+
   return (
     <div className={cx(styles.layout)}>
       <Player onReady={handlePlayerReady} mode="watch" />
@@ -173,6 +188,12 @@ function Watch({ socket, streamId }: WatchProps) {
       {streamStatus === 'not-started' && (
         <div className={cx(styles['broadcast-not-available'])}>
           <h3>Stream in not started yet</h3>
+        </div>
+      )}
+      {streamStatus === 'ended' && (
+        <div className={cx(styles['broadcast-not-available'])}>
+          <h3>Broadcast has been ended</h3>
+          <Button variant="primary" label="Go to streams" onClick={handleGoToStreams} />
         </div>
       )}
     </div>

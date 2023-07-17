@@ -34,6 +34,7 @@ function StreamPage() {
             startTime={new Date(Number(streamTeaser?.startTime?.replace(/,/g, '')))}
             broadcasterInfo={users?.[streamTeaser.broadcaster]}
             isUserSubscribed={users?.[streamTeaser.broadcaster]?.subscribers?.includes(account?.decodedAddress)}
+            streamId={streamId}
           />
         </>
       )}

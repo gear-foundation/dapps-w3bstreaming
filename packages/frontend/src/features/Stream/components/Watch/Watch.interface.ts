@@ -16,7 +16,8 @@ export type StreamState =
   | 'loading'
   | 'streaming'
   | 'not-subscribed'
-  | 'not-started';
+  | 'not-started'
+  | 'ended';
 
 export interface OfferMsg {
   userId: string;

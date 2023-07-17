@@ -42,6 +42,28 @@
         width: 62px;
         border-radius: 50px;
 
+        &-wrapper {
+            position: relative;
+        }
+
+        &-on-air {
+            border: 3px solid #FF0101;
+        }
+
+        &-caption-on-air {
+            bottom: 0;
+            width: 100%;
+            padding: 4px 0;
+            text-align: center;
+            background: #FF0101;
+            color: white;
+            border-top: 2px solid white;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transform: translateY(-50%);
+        }
     }
 
     &-content {

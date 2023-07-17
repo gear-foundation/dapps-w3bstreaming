@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
 import styles from './Layout.module.scss';
 import { cx, socket } from '@/utils';
 import { Button } from '@/ui';
@@ -18,10 +19,13 @@ function Layout({
   broadcasterInfo,
   broadcasterId,
   isUserSubscribed,
+  streamId,
 }: LayoutProps) {
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
-  const [connectionsCount, setConnectionsCount] = useState(0);
+  const [connectionsCount, setConnectionsCount] = useState<number>(0);
+  const [isStreamGoing, setIsStreamGoing] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { account } = useAccount();
 
   const handleRedirectToAccount = () => {
     navigate('/account');
@@ -36,10 +40,19 @@ function Layout({
   };
 
   useEffect(() => {
-    socket.on('viewersCount', (connections) => {
-      setConnectionsCount(connections);
-    });
-  }, []);
+    if (account?.decodedAddress) {
+      socket.emit('getWatchersCount', account?.decodedAddress, { streamId });
+      socket.emit('getIsStreaming', account?.decodedAddress, { streamId });
+
+      socket.on('watchersCount', (connections) => {
+        setConnectionsCount(connections);
+      });
+
+      socket.on('isStreaming', (isStreaming) => {
+        setIsStreamGoing(isStreaming);
+      });
+    }
+  }, [streamId, account?.decodedAddress]);
 
   return (
     <div className={cx(styles.layout)}>
@@ -47,11 +60,17 @@ function Layout({
         <div className={cx(styles.title)}>{title}</div>
         <div className={cx(styles['card-top-speaker-container'])}>
           <div className={cx(styles['card-top-speaker'])}>
-            <img
-              className={cx(styles['card-top-speaker-photo'])}
-              src={broadcasterInfo?.imgLink || speakerPhoto}
-              alt=""
-            />
+            <div className={cx(styles['card-top-speaker-photo-wrapper'])}>
+              <img
+                className={cx(
+                  styles['card-top-speaker-photo'],
+                  isStreamGoing ? styles['card-top-speaker-photo-on-air'] : '',
+                )}
+                src={broadcasterInfo?.imgLink || speakerPhoto}
+                alt=""
+              />
+              {isStreamGoing && <div className={cx(styles['card-top-speaker-photo-caption-on-air'])}>on air</div>}
+            </div>
             <div className={cx(styles['card-top-speaker-content'])}>
               <span className={cx(styles['card-top-speaker-name'])}>
                 {broadcasterInfo?.name} {broadcasterInfo?.surname}

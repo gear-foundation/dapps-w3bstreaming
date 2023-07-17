@@ -16,8 +16,7 @@ export interface IOfferMsg {
   streamId: string;
 }
 
-export interface IUpdateOffersMsg {
-  description: RTCSessionDescription;
+export interface IStopWatchingMsg {
   streamId: string;
 }
 
@@ -33,4 +32,8 @@ export interface ICandidateMsg {
 
 export interface IErrorResponse {
   message: string;
+}
+
+export interface GetInfoForUserMsg {
+  streamId: string;
 }
