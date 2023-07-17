@@ -1,12 +1,13 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import { useAtomValue } from 'jotai';
-import { Button, Dropdown, Search } from '@ui';
+import { Button, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
 import styles from './StreamTeasersList.module.scss';
 import { useStreamTeasersState } from '../../hooks';
-import { selectTeasersMenu } from '../../config';
+// import { selectTeasersMenu } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
 
@@ -22,7 +23,17 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
 
   useEffect(() => {
     if (streamTeasers) {
-      setTeasers(Object.keys(streamTeasers).map((key) => ({ ...streamTeasers[key], id: key })));
+      setTeasers(
+        Object.keys(streamTeasers)
+          .map((key) => ({ ...streamTeasers[key], id: key }))
+          .sort((a, b) => {
+            const aStartTime = moment.unix(Number(a.startTime.replace(/,/g, '')));
+            const bStartTime = moment.unix(Number(b.startTime.replace(/,/g, '')));
+
+            // Сортировка по убыванию
+            return bStartTime.diff(aStartTime);
+          }),
+      );
     }
   }, [streamTeasers]);
 
@@ -44,21 +55,21 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     setShowedTeasersCount(initialTeasersCount);
   }, [searchedValue, teasers, initialTeasersCount]);
 
-  const handleSelectTypeOfStreams = ({ value }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
-    console.log(value); //TODO connect the data
-  };
+  // const handleSelectTypeOfStreams = ({ value }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
+  //   console.log(value); //TODO connect the data
+  // };
 
   return (
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
-        <Dropdown
+        {/* <Dropdown
           label={<h3 className={cx(styles['dropdown-title'])}>All streams</h3>}
           menu={selectTeasersMenu}
           activeValue={selectTeasersMenu.all.value}
           toggleArrowSize="medium"
           alignMenu="left"
           onItemClick={handleSelectTypeOfStreams}
-        />
+        /> */}
         <Search onChange={handleChangedSearchedValue} value={searchedValue} />
       </div>
       <div className={cx(styles.content)}>
