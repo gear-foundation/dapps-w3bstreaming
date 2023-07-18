@@ -49,6 +49,6 @@
 }
 
 .unsubscribe-button {
-  background: #FF0101;
-  color: white;
+  background: theme-var($error);
+  color: theme-var($text-secondary);
 }

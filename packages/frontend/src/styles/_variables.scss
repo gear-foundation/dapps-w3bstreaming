@@ -17,6 +17,11 @@ $table-background-day-cell: --table-background-day-cell;
 $text-section-title: --text-section-title;
 $placeholder-input: --placeholder-input;
 $border-input: --border-input;
+$pale-text: --pale-text;
+$input-range-track: --input-range-track;
+$input-range-thumb: --input-range-thumb;
+$input-range-select: --input-range-select;
+$player-controls-background: --player-controls-background;
 $error: --error;
 
 //ui-kit colors
@@ -41,4 +46,9 @@ $theme-standard: (
     $table-background-day-cell: rgba(0, 255, 196, 0.2),
     $placeholder-input: rgba(0, 0, 0, 0.9),
     $border-input: rgba(0, 0, 0, 0.2),
+    $pale-text: rgba(0, 0, 0, 0.4),
+    $input-range-track: #FFFFFF,
+    $input-range-thumb: #FFFFFF,
+    $input-range-select: #CCCCCC,
+    $player-controls-background: #00000033
 );

@@ -47,7 +47,7 @@
         }
 
         &-on-air {
-            border: 3px solid #FF0101;
+            border: 3px solid theme-var($error);
         }
 
         &-caption-on-air {
@@ -55,9 +55,9 @@
             width: 100%;
             padding: 4px 0;
             text-align: center;
-            background: #FF0101;
-            color: white;
-            border-top: 2px solid white;
+            background: theme-var($error);
+            color: theme-var($text-secondary);
+            border-top: 2px solid theme-var($background-primary);
             border-radius: 4px;
             font-size: 10px;
             font-weight: 700;
@@ -93,7 +93,7 @@
 .stream-description {
     font-size: 16px;
     font-weight: 400;
-    color: gray;
+    color: theme-var($pale-text);
     line-height: 25.6px;
 }
 
@@ -107,16 +107,16 @@
 .views {
     gap: 10px;
     display: flex;
-    color: gray;
+    color: theme-var($pale-text);
 }
 
 .time {
     gap: 10px;
     display: flex;
-    color: gray;
+    color: theme-var($pale-text);
 }
 
 .unsubscribe-button {
-    background: #FF0101;;
-    color: white;
+    background: theme-var($error);
+    color: theme-var($text-secondary);
 }

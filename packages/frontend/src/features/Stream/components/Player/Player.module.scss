@@ -22,7 +22,7 @@
     padding: 0 40px;
     display: flex;
     align-items: center;
-    background: #00000033;
+    background: theme-var($player-controls-background);
 }
 
 .part {
@@ -56,7 +56,7 @@ input[type="range"] {
      width: 15rem;
 
   height: 6px;
-  background: #ccc;
+  background: theme-var($input-range-select);
  }
  
  /* Removes default focus */
@@ -67,7 +67,7 @@ input[type="range"] {
  /***** Chrome, Safari, Opera and Edge Chromium styles *****/
  /* slider track */
  input[type="range"]::-webkit-slider-runnable-track {
-    background: white;
+    background: theme-var($input-range-track);
     border-radius: 0.5rem;
     height: 2px;
  }
@@ -79,7 +79,7 @@ input[type="range"] {
     margin-top: -10px; /* Centers thumb on the track */
  
     /*custom styles*/
-    background: white;
+    background: theme-var($input-range-thumb);
     height: 22px;
     width: 3px;
  }
@@ -88,7 +88,7 @@ input[type="range"] {
  /* slider track */
  
  input[type="range"]::-moz-range-track {
-    background: white;
+    background: theme-var($input-range-track);
     border-radius: 0.5rem;
     height: 2px;
  }
@@ -99,7 +99,7 @@ input[type="range"] {
     border-radius: 0; /*Removes default border-radius that FF applies*/
  
     /*custom styles*/
-    background: white;
+    background: theme-var($input-range-thumb);
     height: 22px;
     width: 3px;
 
