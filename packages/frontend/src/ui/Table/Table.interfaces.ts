@@ -12,9 +12,10 @@ export interface TableProps {
   searchParams?: SearchParams;
   renderCell?: (columnName: string | number, value: CellValue, row: TableRow) => CellValue | JSX.Element;
   renderHeaderCell?: (name: string | number) => CellValue;
-  className: {
-    headerCell: string;
-    cell: string;
+  className?: {
+    headerCell?: string;
+    cell?: string;
+    row?: (row: TableRow) => string;
   };
 }
 
@@ -27,16 +28,17 @@ export interface TableBodyProps {
 }
 
 export interface TableRowProps {
+  className?: string;
   children: JSX.Element[];
 }
 
 export interface TableHeaderCellProps {
-  className: string;
+  className?: string;
   children: CellValue | JSX.Element;
 }
 
 export interface TableCellProps {
-  className: string;
+  className?: string;
   children: CellValue | JSX.Element;
 }
 
@@ -48,3 +50,7 @@ export interface SearchParams {
   column: string;
   placeholder?: string;
 }
+
+export type SortDirection = 'ascending' | 'descending';
+
+export type SortOrder = Record<string, SortDirection>;

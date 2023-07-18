@@ -3,6 +3,7 @@ import { cx } from '@/utils';
 import arrowDownSVG from '@/assets/icons/arrow-filled-down-icon.svg';
 import styles from './Table.module.scss';
 import {
+  SortOrder,
   TableBodyProps,
   TableCellProps,
   TableHeaderCellProps,
@@ -16,11 +17,11 @@ import { Search } from '../Search';
 import { Button } from '../Button';
 
 function Cell({ className, children }: TableCellProps) {
-  return <th className={cx(styles.cell, className)}>{children}</th>;
+  return <th className={cx(styles.cell, className || '')}>{children}</th>;
 }
 
 function HeaderCell({ className, children }: TableHeaderCellProps) {
-  return <th className={cx(styles['header-cell'], className)}>{children}</th>;
+  return <th className={cx(styles['header-cell'], className || '')}>{children}</th>;
 }
 
 function Header({ children }: TableHeaderProps) {
@@ -31,8 +32,8 @@ function Header({ children }: TableHeaderProps) {
   );
 }
 
-function Row({ children }: TableRowProps) {
-  return <tr className={cx(styles.row)}>{children}</tr>;
+function Row({ className, children }: TableRowProps) {
+  return <tr className={cx(styles.row, className || '')}>{children}</tr>;
 }
 
 function Body({ children }: TableBodyProps) {
@@ -53,6 +54,19 @@ function Table({
   const [searchedValue, setSearchedValue] = useState<string>('');
   const [currentRows, setCurrentRows] = useState<TableRow[]>(rows || []);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<SortOrder>({});
+
+  useEffect(() => {
+    setSortOrder(
+      sortedColumns?.reduce(
+        (acc, item: string) => ({
+          ...acc,
+          [item]: 'ascending',
+        }),
+        {},
+      ) || {},
+    );
+  }, [sortedColumns]);
 
   const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchedValue(e.target.value);
@@ -77,7 +91,27 @@ function Table({
   }, [searchedValue, columns, rows, searchParams]);
 
   const handleSortData = (column: string) => {
-    setTableData((prev) => prev.sort((a: TableRow, b: TableRow) => ((a[column] || a) > (b[column] || b) ? 1 : -1)));
+    if (sortOrder[column] === 'ascending') {
+      setTableData((prev) => [
+        ...prev.sort((a: TableRow, b: TableRow) => ((a[column] || a) > (b[column] || b) ? 1 : -1)),
+      ]);
+
+      setSortOrder((prev) => ({
+        ...prev,
+        [column]: 'descending',
+      }));
+    }
+
+    if (sortOrder[column] === 'descending') {
+      setTableData((prev) => [
+        ...prev.sort((a: TableRow, b: TableRow) => ((a[column] || a) < (b[column] || b) ? 1 : -1)),
+      ]);
+
+      setSortOrder((prev) => ({
+        ...prev,
+        [column]: 'ascending',
+      }));
+    }
   };
 
   useEffect(() => {
@@ -103,7 +137,7 @@ function Table({
         <table className={cx(styles.table)}>
           <Header>
             {columns.map((column) => (
-              <HeaderCell key={column} className={className.headerCell}>
+              <HeaderCell key={column} className={className?.headerCell}>
                 <>
                   {renderHeaderCell ? renderHeaderCell(column) : column}
                   {sortedColumns?.includes(column) && (
@@ -117,9 +151,9 @@ function Table({
             {tableData?.length ? (
               <>
                 {currentRows.map((row) => (
-                  <Row key={row.id}>
+                  <Row key={row.id} className={className?.row?.(row)}>
                     {columns.map((column: string) => (
-                      <Cell key={column} className={className.cell}>
+                      <Cell key={column} className={className?.cell}>
                         {renderCell ? renderCell(column, row[column], row) : row[column]}
                       </Cell>
                     ))}

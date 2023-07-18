@@ -12,7 +12,7 @@ export const tabs = {
       <UsersTableWithSubscriptionsData
         columns={SUBSCRIPTIONS_USERS_TABLE_COLUMNS}
         searchParams={{ column: 'Streamer' }}
-        sortedColumns={['Streamer', 'Subscription Date', 'Date of next write-off']}
+        sortedColumns={['Streamer']}
       />
     ),
   },
@@ -22,7 +22,7 @@ export const tabs = {
       <UsersTableWithSubscribersData
         columns={SUBSCRIBERS_USERS_TABLE_COLUMNS}
         searchParams={{ column: 'User' }}
-        sortedColumns={['User', 'Subscription Date', 'Last payment date', 'Date of next write-off']}
+        sortedColumns={['User']}
       />
     ),
   },
