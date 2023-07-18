@@ -17,6 +17,10 @@
     flex-direction: column;
     animation-name: burger-menu-slide;
     animation-duration: 0.2s;
+
+    &-close-icon {
+        margin-left: 15px;
+    }
 }
 
 .burger-menu-header{
@@ -25,7 +29,7 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #000000;
-    padding: 20px 40px;
+    padding: 20px;
     z-index: 2;
 }
 
