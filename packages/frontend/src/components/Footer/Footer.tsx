@@ -9,22 +9,22 @@ import twitter from '@/assets/icons/twitter-icon.png';
 const socials = [
   {
     name: 'web',
-    url: '',
+    url: 'https://medium.com/@VaraNetwork',
     icon: web,
   },
   {
     name: 'discord',
-    url: '',
+    url: 'https://discord.gg/x8ZeSy6S6K',
     icon: discord,
   },
   {
     name: 'git',
-    url: '',
+    url: 'https://github.com/gear-foundation',
     icon: git,
   },
   {
     name: 'twitter',
-    url: '',
+    url: 'https://twitter.com/VaraNetwork',
     icon: twitter,
   },
 ];
